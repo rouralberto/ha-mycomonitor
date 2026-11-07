@@ -1,0 +1,25 @@
+# Tool configuration only; the integration is installed by copying
+# custom_components/mycomonitor (HACS does this).
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "ASYNC", "PT", "C4", "PIE", "RET"]
+ignore = ["RUF001", "RUF002", "RUF003"]  # allow °, ³, en dashes and Spanish text
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+known-first-party = ["custom_components"]
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+warn_unreachable = true
+files = ["custom_components/mycomonitor/core"]

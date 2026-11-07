@@ -1,0 +1,35 @@
+name: Species data
+description: Propose a new species, or a change to a species threshold, with its evidence.
+labels: [species-data]
+body:
+  - type: input
+    id: species
+    attributes:
+      label: Species
+      placeholder: e.g. Lactarius deliciosus
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: Proposed threshold, season or habitat change
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: References (DOI or URL), region and habitat studied. See docs/science.md for grades.
+    validations:
+      required: true
+  - type: dropdown
+    id: grade
+    attributes:
+      label: Suggested evidence grade
+      options:
+        - "A: peer-reviewed, quantitative, relevant region/habitat"
+        - "B: peer-reviewed qualitative, other region/habitat, or preprint"
+        - "C: expert consensus, field guides, regional bulletins, phenology"
+        - "D: placeholder"
+    validations:
+      required: true
