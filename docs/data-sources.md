@@ -68,36 +68,52 @@ What this means in practice:
   modelled soil moisture there with caution and prefer a local sensor when
   you have one.
 
-## AEMET OpenData (planned)
+## AEMET OpenData (experimental, 0.5)
 
-- **Key:** free, requested at <https://opendata.aemet.es/centrodedescargas/inicio>
-  and sent in the `api_key` header.
-- **Two-step responses:** each call returns URLs for `datos` and `metadatos`,
-  which must then be fetched.
-- **Endpoints we need:**
-  - `/api/valores/climatologicos/diarios/datos/fechaini/{ini}/fechafin/{fin}/estacion/{idema}`
-    returns daily `tmed`, `tmin`, `tmax`, `prec`, `hrmedia`… **about 4 days
-    behind**. Each request covers at most about 6 months, per third-party
-    libraries.
-  - `/api/observacion/convencional/datos/estacion/{idema}` returns hourly
-    observations, last 12 hours.
-  - `/api/valores/climatologicos/inventarioestaciones/todasestaciones` returns
-    the station list (used to pick the nearest stations by distance and
-    altitude).
-- **Quirks:**
-  - `prec` can be `"Ip"` (under 0.1 mm) or `"Acum"`, and the rain day runs
-    07:00 to 07:00.
-  - Rate limits answer with HTTP 429, and the service has intermittent
-    outages.
-- **Licence:** reuse is allowed, citing AEMET as the author ("© AEMET").
-- **Role:** bias checks and history, not the live path.
+Optional. Add a free key (<https://opendata.aemet.es/centrodedescargas/inicio>)
+in Settings → Devices & services → MycoMonitor → Configure → Settings. The
+location form then shows the ten nearest AEMET stations, with their distance
+and altitude, and you can pick one.
 
-## Home Assistant sensors (planned, 0.5)
+- **Precipitation only.** Station temperatures can come from hundreds of
+  metres lower or higher than the location, while model temperatures are
+  adjusted to its altitude.
+- **Past days only.** Daily climatology is about 4 days behind, so recent days
+  and the forecast still come from the model.
+- **Day boundaries:** AEMET's daily precipitation runs 07:00 to 07:00 UTC, so
+  it is shifted by up to a day relative to calendar days. For 7-30 day sums
+  this rarely matters.
+- **Value conventions:** `"Ip"` (under 0.1 mm) is read as 0, and `"Acum"` (an
+  accumulated value) is skipped.
+- **Refreshing and failures:** data is refreshed every 12 hours. If a fetch
+  fails, the last data is kept and the update carries on.
+- **How it works:** each call is two-step (the response carries a `datos` URL
+  to fetch). The key is sent in the `api_key` header, and data is decoded as
+  ISO-8859-15.
+- **Experimental** because it was built from AEMET's OpenAPI specification
+  and field descriptors, not yet verified against a live key. Please report
+  issues.
+- **Attribution:** "© AEMET".
 
-Your entities (rain gauge, temperature, humidity, soil moisture, soil
-temperature) are read through Home Assistant's long-term statistics. They
-need a `state_class`, and they survive the recorder purge. When present,
-they take priority over model data and are tagged `measured`.
+## Home Assistant sensors (0.5)
+
+Map your own sensors to a location (location form → *Local sensors*). Daily
+values come from Home Assistant's **long-term statistics**, which survive the
+recorder purge:
+
+| Sensor | Needs | Gives |
+|---|---|---|
+| Rain gauge | state class `total` or `total_increasing` (cumulative or daily-resetting) | daily change = daily rain |
+| Air temperature | state class `measurement` | daily mean, minimum, maximum |
+| Humidity | `measurement` | daily mean |
+| Soil moisture | `measurement`, % | daily mean as volumetric water content |
+| Soil temperature | `measurement` | daily mean |
+
+- Only complete days before today are used.
+- Measured values replace station and model values for those days, tagged
+  `measured`.
+- Cheap capacitive soil sensors are rarely calibrated: their trend is
+  meaningful, their level less so.
 
 ## Other sources considered
 

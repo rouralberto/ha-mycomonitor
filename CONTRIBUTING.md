@@ -38,7 +38,9 @@ reference points only).
 - `docs/species/*.md` come from `scripts/generate_species_docs.py`, which reads
   the profiles in `core/species/profiles/`.
 
-Tests fail if either is stale.
+- `examples/dashboards/*.yaml` come from `scripts/generate_dashboard.py`.
+
+Tests fail if any of them is stale.
 
 ## Pull requests
 

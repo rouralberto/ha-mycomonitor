@@ -6,6 +6,26 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-07
+
+### Added
+
+- **Local sensors:** map your own rain gauge, air temperature, humidity, soil
+  moisture and soil temperature sensors to a location (collapsible section in
+  the location form). Daily values come from Home Assistant's long-term
+  statistics and replace model values for past days (tagged *measured*).
+- **AEMET OpenData (experimental):** optional API key in Settings. Each
+  location can then pick one of its ten nearest AEMET stations, whose daily
+  precipitation is used for past days (tagged *station*). Precipitation only,
+  refreshed every 12 hours.
+- Source priority per day and variable: measured, then station, then model.
+  Failures of local sensors or AEMET never break an update. Diagnostics show
+  how many days came from each.
+- Example dashboards *MycoMonitor - Tierra Estella* (built-in cards; Mushroom +
+  ApexCharts) and `scripts/generate_dashboard.py` to generate one for any
+  locations.
+- Documentation: dashboards, local sensors and AEMET.
+
 ## [0.4.0] - 2026-11-07
 
 ### Added

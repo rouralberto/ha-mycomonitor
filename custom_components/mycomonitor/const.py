@@ -28,3 +28,8 @@ FORECAST_DAYS: Final = 16
 CONF_FAVORABLE_THRESHOLD: Final = "favorable_threshold"
 DEFAULT_FAVORABLE_THRESHOLD: Final = 60
 CONF_SPECIES_OVERRIDES: Final = "species"  # {species_id: {"season": {...}, "curves": {...}}}
+CONF_AEMET_API_KEY: Final = "aemet_api_key"
+
+# Location sub-entry
+CONF_AEMET_STATION: Final = "aemet_station"
+STATION_REFRESH: Final = timedelta(hours=12)  # AEMET daily data changes once a day

@@ -5,7 +5,10 @@
     },
     "error": {
       "invalid_location": "Invalid name, coordinates or altitude.",
-      "no_habitat": "Choose at least one habitat."
+      "no_habitat": "Choose at least one habitat.",
+      "entity_not_found": "A selected sensor doesn't exist.",
+      "rain_needs_total": "The rain gauge needs state class total or total_increasing.",
+      "needs_measurement": "Temperature, humidity and soil sensors need state class measurement."
     },
     "step": {
       "user": {
@@ -22,6 +25,22 @@
           "location": "The point to monitor. Weather data is fetched for these exact coordinates.",
           "altitude": "Optional. Leave empty to use the terrain height (90 m model). Temperatures are adjusted to this altitude.",
           "habitats": "Vegetation at the location. Only species compatible with these habitats get a sensor."
+        },
+        "sections": {
+          "local_sensors": {
+            "name": "Local sensors (optional)",
+            "description": "Your own sensors at this location. Their daily values replace the model's for past days. They need long-term statistics: rain gauges with state class total or total_increasing, the others with measurement.",
+            "data": {
+              "rain_entity": "Rain gauge",
+              "temperature_entity": "Air temperature",
+              "humidity_entity": "Humidity",
+              "soil_moisture_entity": "Soil moisture",
+              "soil_temperature_entity": "Soil temperature"
+            },
+            "data_description": {
+              "soil_moisture_entity": "Read as volumetric water content (%). Uncalibrated sensors are better for trends than levels."
+            }
+          }
         }
       }
     }
@@ -35,7 +54,11 @@
       "entry_type": "Location",
       "error": {
         "invalid_location": "Invalid name, coordinates or altitude.",
-        "no_habitat": "Choose at least one habitat."
+        "no_habitat": "Choose at least one habitat.",
+        "entity_not_found": "A selected sensor doesn't exist.",
+        "rain_needs_total": "The rain gauge needs state class total or total_increasing.",
+        "needs_measurement": "Temperature, humidity and soil sensors need state class measurement.",
+        "stations_unavailable": "Couldn't load AEMET's station list: type a station ID (e.g. 9263D) or leave it empty."
       },
       "initiate_flow": {
         "user": "Add location"
@@ -54,6 +77,22 @@
             "location": "The point to monitor. Weather data is fetched for these exact coordinates.",
             "altitude": "Optional. Leave empty to use the terrain height (90 m model). Temperatures are adjusted to this altitude.",
             "habitats": "Vegetation at the location. Only species compatible with these habitats get a sensor."
+          },
+          "sections": {
+            "local_sensors": {
+              "name": "Local sensors (optional)",
+              "description": "Your own sensors at this location. Their daily values replace the model's for past days. They need long-term statistics: rain gauges with state class total or total_increasing, the others with measurement.",
+              "data": {
+                "rain_entity": "Rain gauge",
+                "temperature_entity": "Air temperature",
+                "humidity_entity": "Humidity",
+                "soil_moisture_entity": "Soil moisture",
+                "soil_temperature_entity": "Soil temperature"
+              },
+              "data_description": {
+                "soil_moisture_entity": "Read as volumetric water content (%). Uncalibrated sensors are better for trends than levels."
+              }
+            }
           }
         },
         "reconfigure": {
@@ -69,6 +108,29 @@
             "location": "The point to monitor. Weather data is fetched for these exact coordinates.",
             "altitude": "Optional. Leave empty to use the terrain height (90 m model). Temperatures are adjusted to this altitude.",
             "habitats": "Vegetation at the location. Only species compatible with these habitats get a sensor."
+          },
+          "sections": {
+            "local_sensors": {
+              "name": "Local sensors (optional)",
+              "description": "Your own sensors at this location. Their daily values replace the model's for past days. They need long-term statistics: rain gauges with state class total or total_increasing, the others with measurement.",
+              "data": {
+                "rain_entity": "Rain gauge",
+                "temperature_entity": "Air temperature",
+                "humidity_entity": "Humidity",
+                "soil_moisture_entity": "Soil moisture",
+                "soil_temperature_entity": "Soil temperature"
+              },
+              "data_description": {
+                "soil_moisture_entity": "Read as volumetric water content (%). Uncalibrated sensors are better for trends than levels."
+              }
+            }
+          }
+        },
+        "station": {
+          "title": "AEMET station (experimental)",
+          "description": "Optionally use the rain gauge of a nearby AEMET station for past days (about 4 days behind). The nearest stations are listed with their distance and altitude. Only precipitation is used.",
+          "data": {
+            "aemet_station": "Station"
           }
         }
       }
@@ -76,6 +138,8 @@
   },
   "options": {
     "error": {
+      "invalid_api_key": "AEMET rejected this API key.",
+      "cannot_connect": "Couldn't reach AEMET to check the key.",
       "invalid_override": "Invalid value: {error}"
     },
     "step": {
@@ -119,9 +183,11 @@
       "settings": {
         "title": "Settings",
         "data": {
-          "favorable_threshold": "Favourable conditions threshold"
+          "favorable_threshold": "Favourable conditions threshold",
+          "aemet_api_key": "AEMET OpenData API key (optional)"
         },
         "data_description": {
+          "aemet_api_key": "Free from opendata.aemet.es. With a key, each location can use a nearby AEMET rain gauge (experimental). Leave empty to disable.",
           "favorable_threshold": "A location's favourable-conditions sensor turns on when any species' index reaches this value (0-100)."
         }
       },

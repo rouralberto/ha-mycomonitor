@@ -59,6 +59,15 @@ LOCATION_ERRORS = {
         "Invalid name, coordinates or altitude.", "Nombre, coordenadas o altitud no válidos."
     ),
     "no_habitat": t("Choose at least one habitat.", "Elige al menos un hábitat."),
+    "entity_not_found": t("A selected sensor doesn't exist.", "Un sensor elegido no existe."),
+    "rain_needs_total": t(
+        "The rain gauge needs state class total or total_increasing.",
+        "El pluviómetro necesita la clase de estado total o total_increasing.",
+    ),
+    "needs_measurement": t(
+        "Temperature, humidity and soil sensors need state class measurement.",
+        "Los sensores de temperatura, humedad y suelo necesitan la clase de estado measurement.",
+    ),
 }
 
 HABITATS = {
@@ -311,12 +320,53 @@ def pick(tree: Any, lang: str) -> Any:
     return tree
 
 
+LOCAL_SECTION = {
+    "name": t("Local sensors (optional)", "Sensores locales (opcional)"),
+    "description": t(
+        "Your own sensors at this location. Their daily values replace the model's for "
+        "past days. They need long-term statistics: rain gauges with state class total or "
+        "total_increasing, the others with measurement.",
+        "Tus propios sensores en esta ubicación. Sus valores diarios sustituyen a los del "
+        "modelo en los días pasados. Necesitan estadísticas a largo plazo: pluviómetros con "
+        "clase de estado total o total_increasing, el resto con measurement.",
+    ),
+    "data": {
+        "rain_entity": t("Rain gauge", "Pluviómetro"),
+        "temperature_entity": t("Air temperature", "Temperatura del aire"),
+        "humidity_entity": t("Humidity", "Humedad"),
+        "soil_moisture_entity": t("Soil moisture", "Humedad del suelo"),
+        "soil_temperature_entity": t("Soil temperature", "Temperatura del suelo"),
+    },
+    "data_description": {
+        "soil_moisture_entity": t(
+            "Read as volumetric water content (%). Uncalibrated sensors are better for "
+            "trends than levels.",
+            "Se interpreta como contenido volumétrico de agua (%). Los sensores sin calibrar "
+            "sirven más para tendencias que para niveles.",
+        ),
+    },
+}
+STATION_STEP = {
+    "title": t("AEMET station (experimental)", "Estación de AEMET (experimental)"),
+    "description": t(
+        "Optionally use the rain gauge of a nearby AEMET station for past days (about 4 "
+        "days behind). The nearest stations are listed with their distance and altitude. "
+        "Only precipitation is used.",
+        "Opcionalmente, usa el pluviómetro de una estación de AEMET cercana para los días "
+        "pasados (con unos 4 días de retraso). Se listan las estaciones más cercanas con su "
+        "distancia y altitud. Solo se usa la precipitación.",
+    ),
+    "data": {"aemet_station": t("Station", "Estación")},
+}
+
+
 def location_step(title: dict[str, str], description: dict[str, str] | None = None) -> dict:
     step: dict[str, Any] = {"title": title}
     if description:
         step["description"] = description
     step["data"] = LOCATION_DATA
     step["data_description"] = LOCATION_DESC
+    step["sections"] = {"local_sensors": LOCAL_SECTION}
     return step
 
 
@@ -361,18 +411,34 @@ def source() -> dict[str, Any]:
                     ),
                 },
                 "entry_type": t("Location", "Ubicación"),
-                "error": LOCATION_ERRORS,
+                "error": LOCATION_ERRORS
+                | {
+                    "stations_unavailable": t(
+                        "Couldn't load AEMET's station list: type a station ID (e.g. 9263D) "
+                        "or leave it empty.",
+                        "No se pudo cargar la lista de estaciones de AEMET: escribe un "
+                        "indicativo (p. ej. 9263D) o déjalo vacío.",
+                    )
+                },
                 "initiate_flow": {"user": t("Add location", "Añadir ubicación")},
                 "step": {
                     "user": location_step(t("Add a monitoring location", "Añadir una ubicación")),
                     "reconfigure": location_step(
                         t("Edit monitoring location", "Editar la ubicación")
                     ),
+                    "station": STATION_STEP,
                 },
             }
         },
         "options": {
             "error": {
+                "invalid_api_key": t(
+                    "AEMET rejected this API key.", "AEMET ha rechazado esta clave."
+                ),
+                "cannot_connect": t(
+                    "Couldn't reach AEMET to check the key.",
+                    "No se pudo contactar con AEMET para comprobar la clave.",
+                ),
                 "invalid_override": t("Invalid value: {error}", "Valor no válido: {error}"),
             },
             "step": {
@@ -400,15 +466,26 @@ def source() -> dict[str, Any]:
                     "data": {
                         "favorable_threshold": t(
                             "Favourable conditions threshold", "Umbral de condiciones favorables"
-                        )
+                        ),
+                        "aemet_api_key": t(
+                            "AEMET OpenData API key (optional)",
+                            "Clave de AEMET OpenData (opcional)",
+                        ),
                     },
                     "data_description": {
+                        "aemet_api_key": t(
+                            "Free from opendata.aemet.es. With a key, each location can use a "
+                            "nearby AEMET rain gauge (experimental). Leave empty to disable.",
+                            "Gratuita en opendata.aemet.es. Con una clave, cada ubicación puede "
+                            "usar un pluviómetro cercano de AEMET (experimental). Déjala vacía "
+                            "para desactivarlo.",
+                        ),
                         "favorable_threshold": t(
                             "A location's favourable-conditions sensor turns on when any "
                             "species' index reaches this value (0-100).",
                             "El sensor de condiciones favorables de una ubicación se activa "
                             "cuando el índice de alguna especie alcanza este valor (0-100).",
-                        )
+                        ),
                     },
                 },
                 "species": {

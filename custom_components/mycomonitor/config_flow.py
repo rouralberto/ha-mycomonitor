@@ -11,6 +11,7 @@ from datetime import date
 from typing import Any, override
 
 from homeassistant.config_entries import (
+    SOURCE_RECONFIGURE,
     ConfigEntry,
     ConfigFlow,
     ConfigFlowResult,
@@ -21,9 +22,13 @@ from homeassistant.config_entries import (
 )
 from homeassistant.const import CONF_NAME
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.data_entry_flow import section
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
     BooleanSelector,
     DateSelector,
+    EntitySelector,
+    EntitySelectorConfig,
     LocationSelector,
     LocationSelectorConfig,
     MediaSelector,
@@ -37,11 +42,14 @@ from homeassistant.helpers.selector import (
     SelectSelectorMode,
     TextSelector,
     TextSelectorConfig,
+    TextSelectorType,
 )
 from homeassistant.util import dt as dt_util
 import probatio as vol
 
 from .const import (
+    CONF_AEMET_API_KEY,
+    CONF_AEMET_STATION,
     CONF_ALTITUDE,
     CONF_FAVORABLE_THRESHOLD,
     CONF_HABITATS,
@@ -54,11 +62,17 @@ from .const import (
 )
 from .core.models import Location
 from .core.observations import OTHER_SPECIES, Outcome, Quantity
+from .core.providers.aemet import AemetAuthError, AemetProvider
+from .core.providers.base import ProviderError
 from .core.species.engine import Curve, ProfileError, SpeciesProfile
 from .core.species.loader import load_profiles
+from .local_sensors import LOCAL_SENSORS, validate_entity
 
 SEASON_FIELDS = ("start", "peak_start", "peak_end", "end")
 CONF_HABITATS_SINGLE = "habitat"
+SECTION_LOCAL = "local_sensors"
+NO_STATION = "none"
+NEAREST_STATIONS = 10
 
 
 def _schema() -> vol.Schema:
@@ -73,6 +87,17 @@ def _schema() -> vol.Schema:
             ),
             vol.Required(CONF_HABITATS): SelectSelector(
                 SelectSelectorConfig(options=HABITATS, multiple=True, translation_key="habitat")
+            ),
+            vol.Optional(SECTION_LOCAL): section(
+                vol.Schema(
+                    {
+                        vol.Optional(key): EntitySelector(
+                            EntitySelectorConfig(domain="sensor", device_class=sensor.device_class)
+                        )
+                        for key, sensor in LOCAL_SENSORS.items()
+                    }
+                ),
+                {"collapsed": True},
             ),
         }
     )
@@ -93,10 +118,13 @@ def _suggested(hass: HomeAssistant, data: Mapping[str, Any] | None) -> dict[str,
     }
     if data.get(CONF_ALTITUDE) is not None:
         suggested[CONF_ALTITUDE] = data[CONF_ALTITUDE]
+    suggested[SECTION_LOCAL] = {key: data[key] for key in LOCAL_SENSORS if data.get(key)}
     return suggested
 
 
-def _validate(user_input: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, str]]:
+def _validate(
+    hass: HomeAssistant, user_input: Mapping[str, Any]
+) -> tuple[dict[str, Any], dict[str, str]]:
     """Turn form input into sub-entry data, or errors."""
     name = str(user_input[CONF_NAME]).strip()
     position = user_input[CONF_LOCATION]
@@ -115,6 +143,12 @@ def _validate(user_input: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, 
         errors["base"] = "invalid_location"
     if not data[CONF_HABITATS]:
         errors[CONF_HABITATS] = "no_habitat"
+    local = user_input.get(SECTION_LOCAL) or {}
+    for key in LOCAL_SENSORS:
+        entity_id = local.get(key) or None
+        data[key] = entity_id
+        if entity_id and (error := validate_entity(hass, key, entity_id)):
+            errors["base"] = error
     return data, errors
 
 
@@ -156,12 +190,12 @@ class MycoMonitorConfigFlow(ConfigFlow, domain=DOMAIN):
         """Ask for the first location."""
         errors: dict[str, str] = {}
         if user_input is not None:
-            data, errors = _validate(user_input)
+            data, errors = _validate(self.hass, user_input)
             if not errors:
                 return self.async_create_entry(
                     title="MycoMonitor",
                     data={},
-                    subentries=[_subentry(data)],
+                    subentries=[_subentry(data | {CONF_AEMET_STATION: None})],
                 )
         return self.async_show_form(
             step_id="user",
@@ -173,20 +207,23 @@ class MycoMonitorConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class LocationSubentryFlow(ConfigSubentryFlow):
-    """Add or edit a monitoring location."""
+    """Add or edit a monitoring location (then pick an AEMET station, if a key is set)."""
+
+    def __init__(self) -> None:
+        self._data: dict[str, Any] = {}
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> SubentryFlowResult:
         """Add a location."""
         errors: dict[str, str] = {}
         if user_input is not None:
-            data, errors = _validate(user_input)
+            data, errors = _validate(self.hass, user_input)
             if not errors:
-                unique_id = _unique_id(data)
-                if any(s.unique_id == unique_id for s in self._get_entry().subentries.values()):
+                if any(
+                    s.unique_id == _unique_id(data) for s in self._get_entry().subentries.values()
+                ):
                     return self.async_abort(reason="already_configured")
-                return self.async_create_entry(
-                    title=data[CONF_NAME], data=data, unique_id=unique_id
-                )
+                self._data = data | {CONF_AEMET_STATION: None}
+                return await self._async_next()
         return self.async_show_form(
             step_id="user",
             data_schema=self.add_suggested_values_to_schema(
@@ -203,18 +240,15 @@ class LocationSubentryFlow(ConfigSubentryFlow):
         subentry = self._get_reconfigure_subentry()
         errors: dict[str, str] = {}
         if user_input is not None:
-            data, errors = _validate(user_input)
+            data, errors = _validate(self.hass, user_input)
             if not errors:
-                unique_id = _unique_id(data)
                 if any(
-                    s.unique_id == unique_id and s.subentry_id != subentry.subentry_id
+                    s.unique_id == _unique_id(data) and s.subentry_id != subentry.subentry_id
                     for s in entry.subentries.values()
                 ):
                     return self.async_abort(reason="already_configured")
-                # The entry's update listener reloads it.
-                return self.async_update_and_abort(
-                    entry, subentry, title=data[CONF_NAME], data=data, unique_id=unique_id
-                )
+                self._data = data | {CONF_AEMET_STATION: subentry.data.get(CONF_AEMET_STATION)}
+                return await self._async_next()
         return self.async_show_form(
             step_id="reconfigure",
             data_schema=self.add_suggested_values_to_schema(
@@ -222,6 +256,63 @@ class LocationSubentryFlow(ConfigSubentryFlow):
             ),
             errors=errors,
         )
+
+    async def async_step_station(
+        self, user_input: dict[str, Any] | None = None
+    ) -> SubentryFlowResult:
+        """Choose the AEMET station whose rain gauge to use (optional)."""
+        if user_input is not None:
+            station = str(user_input.get(CONF_AEMET_STATION) or "").strip().upper()
+            self._data[CONF_AEMET_STATION] = None if station in ("", "NONE") else station
+            return self._async_finish()
+
+        key = self._get_entry().options[CONF_AEMET_API_KEY]
+        provider = AemetProvider(async_get_clientsession(self.hass), key)
+        current = self._data.get(CONF_AEMET_STATION) or NO_STATION
+        try:
+            stations = await provider.async_stations()
+        except ProviderError:
+            stations = []
+        lat, lon = self._data["latitude"], self._data["longitude"]
+        nearest = sorted(stations, key=lambda st: st.distance_km(lat, lon))[:NEAREST_STATIONS]
+        if nearest:
+            options = [SelectOptionDict(value=NO_STATION, label="—")] + [
+                SelectOptionDict(
+                    value=st.id,
+                    label=f"{st.name} ({st.id}) · {st.distance_km(lat, lon):.0f} km"
+                    + (f" · {st.altitude:.0f} m" if st.altitude is not None else ""),
+                )
+                for st in nearest
+            ]
+            selector: Any = SelectSelector(
+                SelectSelectorConfig(options=options, mode=SelectSelectorMode.LIST)
+            )
+        else:
+            selector = TextSelector()
+            current = "" if current == NO_STATION else current
+        return self.async_show_form(
+            step_id="station",
+            data_schema=vol.Schema({vol.Optional(CONF_AEMET_STATION, default=current): selector}),
+            errors={} if nearest else {"base": "stations_unavailable"},
+        )
+
+    async def _async_next(self) -> SubentryFlowResult:
+        if self._get_entry().options.get(CONF_AEMET_API_KEY):
+            return await self.async_step_station()
+        return self._async_finish()
+
+    def _async_finish(self) -> SubentryFlowResult:
+        data = self._data
+        if self.source == SOURCE_RECONFIGURE:
+            # The entry's update listener reloads it.
+            return self.async_update_and_abort(
+                self._get_entry(),
+                self._get_reconfigure_subentry(),
+                title=data[CONF_NAME],
+                data=data,
+                unique_id=_unique_id(data),
+            )
+        return self.async_create_entry(title=data[CONF_NAME], data=data, unique_id=_unique_id(data))
 
 
 def format_curve(curve: Curve) -> str:
@@ -257,14 +348,29 @@ class MycoMonitorOptionsFlow(OptionsFlow):
     async def async_step_settings(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """General settings."""
+        """General settings: favourable threshold and the optional AEMET API key."""
+        errors: dict[str, str] = {}
+        current_key = self.config_entry.options.get(CONF_AEMET_API_KEY, "")
         if user_input is not None:
-            return self.async_create_entry(
-                data={
+            key = str(user_input.get(CONF_AEMET_API_KEY) or "").strip()
+            if key and key != current_key:
+                provider = AemetProvider(async_get_clientsession(self.hass), key)
+                try:
+                    await provider.async_stations()
+                except AemetAuthError:
+                    errors[CONF_AEMET_API_KEY] = "invalid_api_key"
+                except ProviderError:
+                    errors[CONF_AEMET_API_KEY] = "cannot_connect"
+            if not errors:
+                options = {
                     **self.config_entry.options,
                     CONF_FAVORABLE_THRESHOLD: int(user_input[CONF_FAVORABLE_THRESHOLD]),
                 }
-            )
+                if key:
+                    options[CONF_AEMET_API_KEY] = key
+                else:
+                    options.pop(CONF_AEMET_API_KEY, None)
+                return self.async_create_entry(data=options)
         schema = vol.Schema(
             {
                 vol.Required(
@@ -275,9 +381,12 @@ class MycoMonitorOptionsFlow(OptionsFlow):
                 ): NumberSelector(
                     NumberSelectorConfig(min=1, max=100, step=1, mode=NumberSelectorMode.SLIDER)
                 ),
+                vol.Optional(
+                    CONF_AEMET_API_KEY, description={"suggested_value": current_key}
+                ): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
             }
         )
-        return self.async_show_form(step_id="settings", data_schema=schema)
+        return self.async_show_form(step_id="settings", data_schema=schema, errors=errors)
 
     async def async_step_species(
         self, user_input: dict[str, Any] | None = None

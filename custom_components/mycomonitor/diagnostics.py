@@ -33,6 +33,9 @@ async def async_get_config_entry_diagnostics(
             "update_interval_s": coordinator.update_interval.total_seconds()
             if coordinator.update_interval
             else None,
+            "local_sensors": dict(coordinator.local_entities),
+            "aemet_station": coordinator.station_id,
+            "aemet_enabled": coordinator.aemet is not None,
         }
         if data is not None:
             location |= {
@@ -40,6 +43,8 @@ async def async_get_config_entry_diagnostics(
                 "fetched_at": data.fetched_at.isoformat(),
                 "stale": data.stale,
                 "warnings": list(data.warnings),
+                "measured_days": data.measured_days,
+                "station_days": data.station_days,
                 "sources": [
                     {
                         "provider": s.provider,

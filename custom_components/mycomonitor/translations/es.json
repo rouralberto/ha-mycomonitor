@@ -5,7 +5,10 @@
     },
     "error": {
       "invalid_location": "Nombre, coordenadas o altitud no válidos.",
-      "no_habitat": "Elige al menos un hábitat."
+      "no_habitat": "Elige al menos un hábitat.",
+      "entity_not_found": "Un sensor elegido no existe.",
+      "rain_needs_total": "El pluviómetro necesita la clase de estado total o total_increasing.",
+      "needs_measurement": "Los sensores de temperatura, humedad y suelo necesitan la clase de estado measurement."
     },
     "step": {
       "user": {
@@ -22,6 +25,22 @@
           "location": "El punto a vigilar. Los datos meteorológicos se piden para estas coordenadas exactas.",
           "altitude": "Opcional. Déjalo vacío para usar la altura del terreno (modelo de 90 m). Las temperaturas se ajustan a esta altitud.",
           "habitats": "Vegetación de la ubicación. Solo las especies compatibles con estos hábitats tienen sensor."
+        },
+        "sections": {
+          "local_sensors": {
+            "name": "Sensores locales (opcional)",
+            "description": "Tus propios sensores en esta ubicación. Sus valores diarios sustituyen a los del modelo en los días pasados. Necesitan estadísticas a largo plazo: pluviómetros con clase de estado total o total_increasing, el resto con measurement.",
+            "data": {
+              "rain_entity": "Pluviómetro",
+              "temperature_entity": "Temperatura del aire",
+              "humidity_entity": "Humedad",
+              "soil_moisture_entity": "Humedad del suelo",
+              "soil_temperature_entity": "Temperatura del suelo"
+            },
+            "data_description": {
+              "soil_moisture_entity": "Se interpreta como contenido volumétrico de agua (%). Los sensores sin calibrar sirven más para tendencias que para niveles."
+            }
+          }
         }
       }
     }
@@ -35,7 +54,11 @@
       "entry_type": "Ubicación",
       "error": {
         "invalid_location": "Nombre, coordenadas o altitud no válidos.",
-        "no_habitat": "Elige al menos un hábitat."
+        "no_habitat": "Elige al menos un hábitat.",
+        "entity_not_found": "Un sensor elegido no existe.",
+        "rain_needs_total": "El pluviómetro necesita la clase de estado total o total_increasing.",
+        "needs_measurement": "Los sensores de temperatura, humedad y suelo necesitan la clase de estado measurement.",
+        "stations_unavailable": "No se pudo cargar la lista de estaciones de AEMET: escribe un indicativo (p. ej. 9263D) o déjalo vacío."
       },
       "initiate_flow": {
         "user": "Añadir ubicación"
@@ -54,6 +77,22 @@
             "location": "El punto a vigilar. Los datos meteorológicos se piden para estas coordenadas exactas.",
             "altitude": "Opcional. Déjalo vacío para usar la altura del terreno (modelo de 90 m). Las temperaturas se ajustan a esta altitud.",
             "habitats": "Vegetación de la ubicación. Solo las especies compatibles con estos hábitats tienen sensor."
+          },
+          "sections": {
+            "local_sensors": {
+              "name": "Sensores locales (opcional)",
+              "description": "Tus propios sensores en esta ubicación. Sus valores diarios sustituyen a los del modelo en los días pasados. Necesitan estadísticas a largo plazo: pluviómetros con clase de estado total o total_increasing, el resto con measurement.",
+              "data": {
+                "rain_entity": "Pluviómetro",
+                "temperature_entity": "Temperatura del aire",
+                "humidity_entity": "Humedad",
+                "soil_moisture_entity": "Humedad del suelo",
+                "soil_temperature_entity": "Temperatura del suelo"
+              },
+              "data_description": {
+                "soil_moisture_entity": "Se interpreta como contenido volumétrico de agua (%). Los sensores sin calibrar sirven más para tendencias que para niveles."
+              }
+            }
           }
         },
         "reconfigure": {
@@ -69,6 +108,29 @@
             "location": "El punto a vigilar. Los datos meteorológicos se piden para estas coordenadas exactas.",
             "altitude": "Opcional. Déjalo vacío para usar la altura del terreno (modelo de 90 m). Las temperaturas se ajustan a esta altitud.",
             "habitats": "Vegetación de la ubicación. Solo las especies compatibles con estos hábitats tienen sensor."
+          },
+          "sections": {
+            "local_sensors": {
+              "name": "Sensores locales (opcional)",
+              "description": "Tus propios sensores en esta ubicación. Sus valores diarios sustituyen a los del modelo en los días pasados. Necesitan estadísticas a largo plazo: pluviómetros con clase de estado total o total_increasing, el resto con measurement.",
+              "data": {
+                "rain_entity": "Pluviómetro",
+                "temperature_entity": "Temperatura del aire",
+                "humidity_entity": "Humedad",
+                "soil_moisture_entity": "Humedad del suelo",
+                "soil_temperature_entity": "Temperatura del suelo"
+              },
+              "data_description": {
+                "soil_moisture_entity": "Se interpreta como contenido volumétrico de agua (%). Los sensores sin calibrar sirven más para tendencias que para niveles."
+              }
+            }
+          }
+        },
+        "station": {
+          "title": "Estación de AEMET (experimental)",
+          "description": "Opcionalmente, usa el pluviómetro de una estación de AEMET cercana para los días pasados (con unos 4 días de retraso). Se listan las estaciones más cercanas con su distancia y altitud. Solo se usa la precipitación.",
+          "data": {
+            "aemet_station": "Estación"
           }
         }
       }
@@ -76,6 +138,8 @@
   },
   "options": {
     "error": {
+      "invalid_api_key": "AEMET ha rechazado esta clave.",
+      "cannot_connect": "No se pudo contactar con AEMET para comprobar la clave.",
       "invalid_override": "Valor no válido: {error}"
     },
     "step": {
@@ -119,9 +183,11 @@
       "settings": {
         "title": "Ajustes",
         "data": {
-          "favorable_threshold": "Umbral de condiciones favorables"
+          "favorable_threshold": "Umbral de condiciones favorables",
+          "aemet_api_key": "Clave de AEMET OpenData (opcional)"
         },
         "data_description": {
+          "aemet_api_key": "Gratuita en opendata.aemet.es. Con una clave, cada ubicación puede usar un pluviómetro cercano de AEMET (experimental). Déjala vacía para desactivarlo.",
           "favorable_threshold": "El sensor de condiciones favorables de una ubicación se activa cuando el índice de alguna especie alcanza este valor (0-100)."
         }
       },

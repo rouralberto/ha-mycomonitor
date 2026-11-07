@@ -48,6 +48,12 @@ async def test_user_flow_creates_hub_with_first_location(hass: HomeAssistant) ->
         "longitude": -2.17,
         "altitude": 916.0,
         "habitats": ["beech", "grassland"],  # canonical order
+        "rain_entity": None,
+        "temperature_entity": None,
+        "humidity_entity": None,
+        "soil_moisture_entity": None,
+        "soil_temperature_entity": None,
+        "aemet_station": None,
     }
 
 

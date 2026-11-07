@@ -25,7 +25,7 @@ custom_components/mycomonitor/
         │  plain dataclasses
   core/ ▼
     models.py        Variable, DataKind, Source, Reading, DailySeries, Location
-    providers/       base (interface + errors), open_meteo, (later) ha_statistics, aemet
+    providers/       base (interface + errors), open_meteo, aemet
     indicators.py    pure functions over a DailySeries, for any day
     (0.3) species/   factor engine + YAML species profiles
     (0.4) observations.py
@@ -70,7 +70,10 @@ three purposes:
   becomes one device:
   - name, coordinates and altitude;
   - habitats (beech, pine, oak, mixed, grassland) and substrate;
-  - optional station and Home Assistant entity mapping (later versions).
+  - optional local sensors (Home Assistant entities) and AEMET station.
+- **Sources per day and variable:** local sensors (long-term statistics,
+  `local_sensors.py`), then the AEMET station (precipitation), then
+  Open-Meteo. Local sensors and AEMET never break an update.
 - **Coordinator:** one per location, updating every 3 hours (two Open-Meteo
   calls). A location that fails at startup doesn't block the others and
   retries every 15 minutes. After a failed update, the last data is kept for
