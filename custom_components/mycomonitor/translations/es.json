@@ -82,8 +82,38 @@
       "init": {
         "title": "Opciones de MycoMonitor",
         "menu_options": {
+          "record_observation": "Registrar una salida",
+          "manage_observations": "Gestionar observaciones",
           "settings": "Ajustes",
           "species": "Umbrales de especies"
+        }
+      },
+      "record_observation": {
+        "title": "Registrar una salida",
+        "description": "Registra los hallazgos y también las salidas sin éxito: ambos hacen falta para calibrar los modelos más adelante. Las coordenadas exactas solo se guardan si marcas la casilla, y nunca aparecen en entidades, registros ni diagnósticos.",
+        "data": {
+          "site": "Ubicación",
+          "species": "Especie",
+          "date": "Fecha",
+          "outcome": "Resultado",
+          "quantity": "Cantidad (si se encontró)",
+          "habitat": "Hábitat",
+          "notes": "Notas",
+          "save_coordinates": "Guardar coordenadas exactas",
+          "location": "Punto exacto",
+          "photo": "Foto"
+        },
+        "data_description": {
+          "notes": "Se exportan junto con la observación: evita escribir lugares exactos aquí.",
+          "location": "Solo se usa si marcas «Guardar coordenadas exactas».",
+          "photo": "Opcional, de tu biblioteca multimedia."
+        }
+      },
+      "manage_observations": {
+        "title": "Gestionar observaciones",
+        "description": "{count} observaciones registradas. Selecciona las que quieras borrar (las más recientes primero).",
+        "data": {
+          "delete": "Borrar"
         }
       },
       "settings": {
@@ -204,6 +234,9 @@
       "last_update": {
         "name": "Datos actualizados"
       },
+      "observations": {
+        "name": "Observaciones"
+      },
       "boletus_edulis": {
         "name": "Boletus (grupo edulis)",
         "state_attributes": {
@@ -312,6 +345,24 @@
     }
   },
   "exceptions": {
+    "not_loaded": {
+      "message": "MycoMonitor no está cargado."
+    },
+    "unknown_location": {
+      "message": "Ubicación desconocida: {location}"
+    },
+    "unknown_species": {
+      "message": "Especie desconocida: {species}"
+    },
+    "invalid_observation": {
+      "message": "Observación no válida: {error}"
+    },
+    "geojson_needs_coordinates": {
+      "message": "Una exportación GeoJSON necesita include_coordinates."
+    },
+    "unknown_observation": {
+      "message": "No hay ninguna observación con id {id}."
+    },
     "update_failed": {
       "message": "No se pudo actualizar {location}: {error}"
     },
@@ -337,7 +388,108 @@
         "craterellus_cornucopioides": "Trompeta de los muertos",
         "hydnum_repandum": "Lengua de vaca",
         "lactarius_deliciosus": "Níscalo",
-        "lepista_nuda": "Pie azul"
+        "lepista_nuda": "Pie azul",
+        "other": "Otra"
+      }
+    },
+    "outcome": {
+      "options": {
+        "found": "Encontrada",
+        "not_found": "Buscada, no encontrada"
+      }
+    },
+    "quantity": {
+      "options": {
+        "none": "Ninguna",
+        "few": "Pocas (1-5)",
+        "some": "Bastantes (6-20)",
+        "many": "Muchas (más de 20)"
+      }
+    },
+    "export_format": {
+      "options": {
+        "csv": "CSV",
+        "geojson": "GeoJSON"
+      }
+    }
+  },
+  "services": {
+    "record_observation": {
+      "name": "Registrar observación",
+      "description": "Registra un hallazgo o una salida sin éxito, con las condiciones que lo precedieron.",
+      "fields": {
+        "location": {
+          "name": "Ubicación",
+          "description": "Nombre de la ubicación o id de subentrada."
+        },
+        "species": {
+          "name": "Especie",
+          "description": "Id de la especie."
+        },
+        "date": {
+          "name": "Fecha",
+          "description": "Por defecto, hoy."
+        },
+        "outcome": {
+          "name": "Resultado",
+          "description": "Encontrada o no."
+        },
+        "quantity": {
+          "name": "Cantidad",
+          "description": "Cantidad aproximada si se encontró."
+        },
+        "habitat": {
+          "name": "Hábitat",
+          "description": "Dónde estaba."
+        },
+        "notes": {
+          "name": "Notas",
+          "description": "Texto libre; evita lugares exactos."
+        },
+        "latitude": {
+          "name": "Latitud",
+          "description": "Opcional; se guarda en privado."
+        },
+        "longitude": {
+          "name": "Longitud",
+          "description": "Opcional; se guarda en privado."
+        },
+        "photo": {
+          "name": "Foto",
+          "description": "Id o ruta del archivo."
+        }
+      }
+    },
+    "export_observations": {
+      "name": "Exportar observaciones",
+      "description": "Guarda las observaciones, con sus condiciones previas, en la carpeta mycomonitor/exports del directorio de configuración.",
+      "fields": {
+        "format": {
+          "name": "Formato",
+          "description": "CSV o GeoJSON."
+        },
+        "include_coordinates": {
+          "name": "Incluir coordenadas",
+          "description": "Desactivado por defecto. Nunca compartas en público una exportación con coordenadas."
+        },
+        "decimals": {
+          "name": "Decimales de las coordenadas",
+          "description": "Redondeo: 3 decimales son unos 100 m; 2, aproximadamente 1 km."
+        },
+        "location": {
+          "name": "Ubicación",
+          "description": "Solo esta ubicación (opcional)."
+        }
+      }
+    },
+    "delete_observation": {
+      "name": "Borrar observación",
+      "description": "Borra una observación.",
+      "fields": {
+        "id": {
+          "name": "ID",
+          "description": "Id de la observación."
+        }
       }
     }
   }

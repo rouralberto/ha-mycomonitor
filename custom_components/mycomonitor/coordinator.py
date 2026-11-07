@@ -84,6 +84,7 @@ class LocationCoordinator(DataUpdateCoordinator[LocationData]):
         self.subentry_id = subentry.subentry_id
         self.location = location_from_subentry(subentry)
         self.habitats: list[str] = list(subentry.data.get("habitats", []))
+        self.all_profiles = profiles
         # Only species whose habitats match this location's.
         self.profiles = {
             pid: profile
@@ -91,6 +92,10 @@ class LocationCoordinator(DataUpdateCoordinator[LocationData]):
             if profile.compatible_with(self.habitats)
         }
         self.provider = OpenMeteoProvider(async_get_clientsession(hass))
+
+    def profile_for(self, species: str) -> SpeciesProfile | None:
+        """Any bundled profile (observations may name species outside the habitats)."""
+        return self.all_profiles.get(species)
 
     async def _async_update_data(self) -> LocationData:
         try:

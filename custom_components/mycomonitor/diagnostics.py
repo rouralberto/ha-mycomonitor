@@ -20,7 +20,7 @@ async def async_get_config_entry_diagnostics(
 ) -> dict[str, Any]:
     """Return diagnostics for the hub and every location."""
     locations = []
-    for subentry_id, coordinator in entry.runtime_data.items():
+    for subentry_id, coordinator in entry.runtime_data.coordinators.items():
         subentry = entry.subentries[subentry_id]
         data = coordinator.data
         location: dict[str, Any] = {
@@ -65,4 +65,15 @@ async def async_get_config_entry_diagnostics(
                 },
             }
         locations.append(location)
-    return {"entry": {"title": entry.title, "version": entry.version}, "locations": locations}
+    observations = entry.runtime_data.observations.observations
+    return {
+        "entry": {"title": entry.title, "version": entry.version},
+        "options": {k: v for k, v in entry.options.items() if k != "aemet_api_key"},
+        "locations": locations,
+        # Counts only: observations hold sensitive coordinates and notes.
+        "observations": {
+            "total": len(observations),
+            "with_coordinates": sum(1 for o in observations if o.has_coordinates),
+            "without_snapshot": sum(1 for o in observations if o.snapshot is None),
+        },
+    }

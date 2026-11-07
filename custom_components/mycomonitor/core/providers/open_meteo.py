@@ -136,6 +136,24 @@ class OpenMeteoProvider:
         ]
         return ProviderResult(series=series, today=today, warnings=warnings)
 
+    async def async_fetch_history(
+        self, location: Location, *, end: date, days: int = 92
+    ) -> DailySeries:
+        """Archive data only, for the `days` days ending on `end` (e.g. observation snapshots)."""
+        if not 1 <= days <= MAX_PAST_DAYS:
+            raise ValueError(f"days must be 1..{MAX_PAST_DAYS}")
+        payload = await self._get(
+            self._archive_url,
+            {
+                **_common_params(location),
+                "start_date": (end - timedelta(days=days - 1)).isoformat(),
+                "end_date": end.isoformat(),
+            },
+        )
+        return parse_response(
+            payload, kind_for_day=lambda _day: DataKind.ANALYSIS, model=DEFAULT_MODEL
+        )
+
     async def _get(self, url: str, params: Mapping[str, str | int | float]) -> dict[str, Any]:
         try:
             async with self._session.get(url, params=params, timeout=self._timeout) as response:

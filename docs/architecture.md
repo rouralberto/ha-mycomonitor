@@ -107,6 +107,9 @@ See [species/](species/README.md) for the generated per-species pages.
 
 ## Observations (0.4)
 
+See [observations.md](observations.md) for usage and privacy details.
+
+
 - **Fields:**
   - species, date, location and habitat;
   - outcome (found / **not found**) and a quantity class;

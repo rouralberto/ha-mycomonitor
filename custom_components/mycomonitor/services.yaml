@@ -1,0 +1,103 @@
+record_observation:
+  fields:
+    location:
+      required: true
+      example: Urbasa
+      selector:
+        text: {}
+    species:
+      required: true
+      selector:
+        select:
+          options:
+          - boletus_edulis
+          - calocybe_gambosa
+          - cantharellus_cibarius
+          - craterellus_cornucopioides
+          - hydnum_repandum
+          - lactarius_deliciosus
+          - lepista_nuda
+          - other
+          translation_key: species
+    date:
+      selector:
+        date: {}
+    outcome:
+      required: true
+      selector:
+        select:
+          options:
+          - found
+          - not_found
+          translation_key: outcome
+    quantity:
+      selector:
+        select:
+          options:
+          - none
+          - few
+          - some
+          - many
+          translation_key: quantity
+    habitat:
+      selector:
+        select:
+          options:
+          - beech
+          - pine
+          - oak
+          - mixed
+          - grassland
+          translation_key: habitat
+    notes:
+      selector:
+        text:
+          multiline: true
+    latitude:
+      selector:
+        number:
+          min: -90
+          max: 90
+          step: any
+          mode: box
+    longitude:
+      selector:
+        number:
+          min: -180
+          max: 180
+          step: any
+          mode: box
+    photo:
+      example: media-source://media_source/local/setas/2026-11-07.jpg
+      selector:
+        text: {}
+export_observations:
+  fields:
+    format:
+      default: csv
+      selector:
+        select:
+          options:
+          - csv
+          - geojson
+          translation_key: export_format
+    include_coordinates:
+      default: false
+      selector:
+        boolean: {}
+    decimals:
+      default: 5
+      selector:
+        number:
+          min: 0
+          max: 6
+          mode: box
+    location:
+      selector:
+        text: {}
+delete_observation:
+  fields:
+    id:
+      required: true
+      selector:
+        text: {}

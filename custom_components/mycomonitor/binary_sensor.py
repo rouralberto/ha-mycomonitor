@@ -24,7 +24,7 @@ async def async_setup_entry(
 ) -> None:
     """One binary sensor per location."""
     threshold = float(entry.options.get(CONF_FAVORABLE_THRESHOLD, DEFAULT_FAVORABLE_THRESHOLD))
-    for subentry_id, coordinator in entry.runtime_data.items():
+    for subentry_id, coordinator in entry.runtime_data.coordinators.items():
         async_add_entities(
             [FavorableConditionsSensor(coordinator, threshold)], config_subentry_id=subentry_id
         )

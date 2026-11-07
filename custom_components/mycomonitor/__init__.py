@@ -8,27 +8,50 @@ in `core/`, which has no Home Assistant dependencies.
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Callable
+from dataclasses import dataclass
 import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 
 from .const import CONF_SPECIES_OVERRIDES, DOMAIN, SUBENTRY_LOCATION
 from .coordinator import LocationCoordinator
 from .core.species.engine import ProfileError, SpeciesProfile
 from .core.species.loader import load_profiles
+from .observations import ObservationManager
+from .services import async_setup_services
 
 PLATFORMS: list[Platform] = [Platform.BINARY_SENSOR, Platform.SENSOR]
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 _LOGGER = logging.getLogger(__name__)
 
-type MycoMonitorConfigEntry = ConfigEntry[dict[str, LocationCoordinator]]
+
+@dataclass(slots=True)
+class MycoMonitorData:
+    """Runtime state of the hub entry."""
+
+    coordinators: dict[str, LocationCoordinator]
+    observations: ObservationManager
+    profiles: dict[str, SpeciesProfile]
+
+
+type MycoMonitorConfigEntry = ConfigEntry[MycoMonitorData]
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Register the services (they work once the hub entry is loaded)."""
+    async_setup_services(hass)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: MycoMonitorConfigEntry) -> bool:
-    """Set up a coordinator per location, then the platforms."""
+    """Set up a coordinator per location, the observation log, then the platforms."""
     profiles = _apply_overrides(
         await hass.async_add_executor_job(load_profiles),
         entry.options.get(CONF_SPECIES_OVERRIDES, {}),
@@ -43,10 +66,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: MycoMonitorConfigEntry) 
     if coordinators and not any(c.last_update_success for c in coordinators.values()):
         raise ConfigEntryNotReady(translation_domain=DOMAIN, translation_key="no_data")
 
-    entry.runtime_data = coordinators
+    observations = ObservationManager(hass, profiles)
+    await observations.async_load()
+    entry.runtime_data = MycoMonitorData(coordinators, observations, profiles)
+
+    for coordinator in coordinators.values():
+        entry.async_on_unload(
+            coordinator.async_add_listener(_backfill_listener(hass, observations, coordinator))
+        )
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
+
+
+def _backfill_listener(
+    hass: HomeAssistant, observations: ObservationManager, coordinator: LocationCoordinator
+) -> Callable[[], None]:
+    @callback
+    def listener() -> None:
+        if coordinator.last_update_success:
+            hass.async_create_background_task(
+                observations.async_backfill(coordinator), f"{DOMAIN} snapshot backfill"
+            )
+
+    return listener
 
 
 def _apply_overrides(

@@ -7,6 +7,7 @@ locations are added (and edited) from the integration page as sub-entries.
 from __future__ import annotations
 
 from collections.abc import Mapping
+from datetime import date
 from typing import Any, override
 
 from homeassistant.config_entries import (
@@ -22,15 +23,22 @@ from homeassistant.const import CONF_NAME
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.selector import (
     BooleanSelector,
+    DateSelector,
     LocationSelector,
     LocationSelectorConfig,
+    MediaSelector,
+    MediaSelectorConfig,
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
+    SelectOptionDict,
     SelectSelector,
     SelectSelectorConfig,
+    SelectSelectorMode,
     TextSelector,
+    TextSelectorConfig,
 )
+from homeassistant.util import dt as dt_util
 import probatio as vol
 
 from .const import (
@@ -45,10 +53,12 @@ from .const import (
     SUBENTRY_LOCATION,
 )
 from .core.models import Location
+from .core.observations import OTHER_SPECIES, Outcome, Quantity
 from .core.species.engine import Curve, ProfileError, SpeciesProfile
 from .core.species.loader import load_profiles
 
 SEASON_FIELDS = ("start", "peak_start", "peak_end", "end")
+CONF_HABITATS_SINGLE = "habitat"
 
 
 def _schema() -> vol.Schema:
@@ -239,7 +249,10 @@ class MycoMonitorOptionsFlow(OptionsFlow):
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Menu."""
-        return self.async_show_menu(step_id="init", menu_options=["settings", "species"])
+        return self.async_show_menu(
+            step_id="init",
+            menu_options=["record_observation", "manage_observations", "settings", "species"],
+        )
 
     async def async_step_settings(
         self, user_input: dict[str, Any] | None = None
@@ -362,4 +375,135 @@ class MycoMonitorOptionsFlow(OptionsFlow):
     def _save_overrides(self, overrides: dict[str, Any]) -> ConfigFlowResult:
         return self.async_create_entry(
             data={**self.config_entry.options, CONF_SPECIES_OVERRIDES: overrides}
+        )
+
+    async def async_step_record_observation(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Record a find or an empty visit."""
+        from .observations import ObservationError
+
+        data = self.config_entry.runtime_data
+        if not data.coordinators:
+            return self.async_abort(reason="no_locations")
+        errors: dict[str, str] = {}
+        detail = ""
+        if user_input is not None:
+            coordinator = data.coordinators[user_input["site"]]
+            outcome = Outcome(user_input["outcome"])
+            position = user_input.get(CONF_LOCATION) if user_input.get("save_coordinates") else None
+            photo = user_input.get("photo")
+            try:
+                obs = await data.observations.async_record(
+                    coordinator,
+                    species=user_input["species"],
+                    day=date.fromisoformat(user_input["date"]),
+                    outcome=outcome,
+                    quantity=Quantity.NONE
+                    if outcome is Outcome.NOT_FOUND
+                    else user_input.get("quantity", Quantity.FEW),
+                    habitat=user_input.get(CONF_HABITATS_SINGLE),
+                    notes=user_input.get("notes", ""),
+                    latitude=position["latitude"] if position else None,
+                    longitude=position["longitude"] if position else None,
+                    photo=photo.get("media_content_id") if isinstance(photo, dict) else None,
+                )
+            except ObservationError as err:
+                errors["base"] = err.key
+                detail = str(err)
+            else:
+                return self.async_abort(
+                    reason="observation_recorded"
+                    if obs.snapshot
+                    else "observation_recorded_no_snapshot"
+                )
+
+        first = next(iter(data.coordinators.values())).location
+        locations = [
+            SelectOptionDict(value=sid, label=c.location.name)
+            for sid, c in data.coordinators.items()
+        ]
+        schema = vol.Schema(
+            {
+                vol.Required("site", default=locations[0]["value"]): SelectSelector(
+                    SelectSelectorConfig(options=locations, mode=SelectSelectorMode.DROPDOWN)
+                ),
+                vol.Required("species"): SelectSelector(
+                    SelectSelectorConfig(
+                        options=[*data.profiles, OTHER_SPECIES], translation_key="species"
+                    )
+                ),
+                vol.Required("date", default=dt_util.now().date().isoformat()): DateSelector(),
+                vol.Required("outcome", default=Outcome.FOUND.value): SelectSelector(
+                    SelectSelectorConfig(
+                        options=[o.value for o in Outcome], translation_key="outcome"
+                    )
+                ),
+                vol.Required("quantity", default=Quantity.FEW.value): SelectSelector(
+                    SelectSelectorConfig(
+                        options=[q.value for q in Quantity if q is not Quantity.NONE],
+                        translation_key="quantity",
+                    )
+                ),
+                vol.Optional(CONF_HABITATS_SINGLE): SelectSelector(
+                    SelectSelectorConfig(options=HABITATS, translation_key="habitat")
+                ),
+                vol.Optional("notes"): TextSelector(TextSelectorConfig(multiline=True)),
+                vol.Required("save_coordinates", default=False): BooleanSelector(),
+                vol.Optional(
+                    CONF_LOCATION,
+                    default={"latitude": first.latitude, "longitude": first.longitude},
+                ): LocationSelector(LocationSelectorConfig(radius=False)),
+                vol.Optional("photo"): MediaSelector(MediaSelectorConfig(accept=["image/*"])),
+            }
+        )
+        return self.async_show_form(
+            step_id="record_observation",
+            data_schema=self.add_suggested_values_to_schema(schema, user_input or {}),
+            errors=errors,
+            description_placeholders={"error": detail},
+        )
+
+    async def async_step_manage_observations(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Delete observations."""
+        manager = self.config_entry.runtime_data.observations
+        observations = manager.observations
+        if not observations:
+            return self.async_abort(reason="no_observations")
+        if user_input is not None:
+            removed = await manager.async_delete(user_input.get("delete", []))
+            return self.async_abort(
+                reason="observations_deleted", description_placeholders={"count": str(removed)}
+            )
+        profiles = self.config_entry.runtime_data.profiles
+        language = self.hass.config.language
+        options = [
+            SelectOptionDict(
+                value=o.id,
+                label=" · ".join(
+                    [
+                        o.day.isoformat(),
+                        o.location_name,
+                        profiles[o.species].name(language) if o.species in profiles else o.species,
+                        o.outcome.value,
+                    ]
+                ),
+            )
+            for o in reversed(observations[-100:])
+        ]
+        schema = vol.Schema(
+            {
+                vol.Optional("delete", default=[]): SelectSelector(
+                    SelectSelectorConfig(
+                        options=options, multiple=True, mode=SelectSelectorMode.LIST
+                    )
+                )
+            }
+        )
+        return self.async_show_form(
+            step_id="manage_observations",
+            data_schema=schema,
+            description_placeholders={"count": str(len(observations))},
         )

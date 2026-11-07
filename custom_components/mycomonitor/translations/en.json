@@ -82,8 +82,38 @@
       "init": {
         "title": "MycoMonitor options",
         "menu_options": {
+          "record_observation": "Record a visit",
+          "manage_observations": "Manage observations",
           "settings": "Settings",
           "species": "Species thresholds"
+        }
+      },
+      "record_observation": {
+        "title": "Record a visit",
+        "description": "Record finds and also visits where you found nothing: both are needed to calibrate the models later. Exact coordinates are only saved if you tick the box, and are never shown in entities, logs or diagnostics.",
+        "data": {
+          "site": "Location",
+          "species": "Species",
+          "date": "Date",
+          "outcome": "Outcome",
+          "quantity": "Quantity (if found)",
+          "habitat": "Habitat",
+          "notes": "Notes",
+          "save_coordinates": "Save exact coordinates",
+          "location": "Exact spot",
+          "photo": "Photo"
+        },
+        "data_description": {
+          "notes": "Exported together with the observation: avoid writing exact places here.",
+          "location": "Only used if 'Save exact coordinates' is ticked.",
+          "photo": "Optional, from your media library."
+        }
+      },
+      "manage_observations": {
+        "title": "Manage observations",
+        "description": "{count} observations recorded. Select the ones to delete (newest first).",
+        "data": {
+          "delete": "Delete"
         }
       },
       "settings": {
@@ -204,6 +234,9 @@
       "last_update": {
         "name": "Data updated"
       },
+      "observations": {
+        "name": "Observations"
+      },
       "boletus_edulis": {
         "name": "Porcini (Boletus edulis group)",
         "state_attributes": {
@@ -312,6 +345,24 @@
     }
   },
   "exceptions": {
+    "not_loaded": {
+      "message": "MycoMonitor is not set up or not loaded."
+    },
+    "unknown_location": {
+      "message": "Unknown location: {location}"
+    },
+    "unknown_species": {
+      "message": "Unknown species: {species}"
+    },
+    "invalid_observation": {
+      "message": "Invalid observation: {error}"
+    },
+    "geojson_needs_coordinates": {
+      "message": "A GeoJSON export needs include_coordinates."
+    },
+    "unknown_observation": {
+      "message": "No observation with id {id}."
+    },
     "update_failed": {
       "message": "Could not update {location}: {error}"
     },
@@ -337,7 +388,108 @@
         "craterellus_cornucopioides": "Black trumpet",
         "hydnum_repandum": "Hedgehog mushroom",
         "lactarius_deliciosus": "Saffron milk cap",
-        "lepista_nuda": "Wood blewit"
+        "lepista_nuda": "Wood blewit",
+        "other": "Other"
+      }
+    },
+    "outcome": {
+      "options": {
+        "found": "Found",
+        "not_found": "Searched, not found"
+      }
+    },
+    "quantity": {
+      "options": {
+        "none": "None",
+        "few": "A few (1-5)",
+        "some": "Some (6-20)",
+        "many": "Many (more than 20)"
+      }
+    },
+    "export_format": {
+      "options": {
+        "csv": "CSV",
+        "geojson": "GeoJSON"
+      }
+    }
+  },
+  "services": {
+    "record_observation": {
+      "name": "Record observation",
+      "description": "Records a find or an empty visit, with the conditions that preceded it.",
+      "fields": {
+        "location": {
+          "name": "Location",
+          "description": "Location name or sub-entry id."
+        },
+        "species": {
+          "name": "Species",
+          "description": "Species id."
+        },
+        "date": {
+          "name": "Date",
+          "description": "Defaults to today."
+        },
+        "outcome": {
+          "name": "Outcome",
+          "description": "Found or not found."
+        },
+        "quantity": {
+          "name": "Quantity",
+          "description": "Approximate amount if found."
+        },
+        "habitat": {
+          "name": "Habitat",
+          "description": "Where it was."
+        },
+        "notes": {
+          "name": "Notes",
+          "description": "Free text; avoid exact places."
+        },
+        "latitude": {
+          "name": "Latitude",
+          "description": "Optional; stored privately."
+        },
+        "longitude": {
+          "name": "Longitude",
+          "description": "Optional; stored privately."
+        },
+        "photo": {
+          "name": "Photo",
+          "description": "Media content id or path."
+        }
+      }
+    },
+    "export_observations": {
+      "name": "Export observations",
+      "description": "Writes the observations, with their preceding conditions, to the mycomonitor/exports folder in the configuration directory.",
+      "fields": {
+        "format": {
+          "name": "Format",
+          "description": "CSV or GeoJSON."
+        },
+        "include_coordinates": {
+          "name": "Include coordinates",
+          "description": "Off by default. Never share an export with coordinates publicly."
+        },
+        "decimals": {
+          "name": "Coordinate decimals",
+          "description": "Rounding: 3 decimals is about 100 m, 2 about 1 km."
+        },
+        "location": {
+          "name": "Location",
+          "description": "Only this location (optional)."
+        }
+      }
+    },
+    "delete_observation": {
+      "name": "Delete observation",
+      "description": "Deletes one observation.",
+      "fields": {
+        "id": {
+          "name": "ID",
+          "description": "Observation id."
+        }
       }
     }
   }

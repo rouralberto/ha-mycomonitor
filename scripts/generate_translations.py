@@ -116,6 +116,7 @@ INDICATORS: dict[str, dict[str, str]] = {
         "Soil temperature trend", "Tendencia de la temperatura del suelo"
     ),
     "last_update": t("Data updated", "Datos actualizados"),
+    "observations": t("Observations", "Observaciones"),
 }
 
 ICONS = {
@@ -135,6 +136,169 @@ ICONS = {
     "soil_moisture_trend_7d": "mdi:chart-line-variant",
     "soil_temperature": "mdi:thermometer-lines",
     "soil_temperature_trend_7d": "mdi:chart-line-variant",
+    "observations": "mdi:notebook-outline",
+}
+
+
+OBSERVATION_ERRORS = {
+    "future_date": t("The date is in the future.", "La fecha es futura."),
+    "invalid_date": t("The date is too old.", "La fecha es demasiado antigua."),
+    "unknown_species": t("Unknown species.", "Especie desconocida."),
+    "invalid_observation": t("Invalid observation: {error}", "Observación no válida: {error}"),
+}
+OBSERVATION_ABORTS = {
+    "no_locations": t("Add a location first.", "Añade primero una ubicación."),
+    "observation_recorded": t(
+        "Observation recorded, with the conditions that preceded it.",
+        "Observación registrada, con las condiciones que la precedieron.",
+    ),
+    "observation_recorded_no_snapshot": t(
+        "Observation recorded. The weather data couldn't be fetched now; it will be added "
+        "automatically later.",
+        "Observación registrada. No se pudieron obtener los datos meteorológicos; se añadirán "
+        "automáticamente más tarde.",
+    ),
+    "no_observations": t("No observations yet.", "Todavía no hay observaciones."),
+    "observations_deleted": t("{count} observations deleted.", "{count} observaciones borradas."),
+}
+RECORD_STEP = {
+    "title": t("Record a visit", "Registrar una salida"),
+    "description": t(
+        "Record finds and also visits where you found nothing: both are needed to calibrate "
+        "the models later. Exact coordinates are only saved if you tick the box, and are "
+        "never shown in entities, logs or diagnostics.",
+        "Registra los hallazgos y también las salidas sin éxito: ambos hacen falta para "
+        "calibrar los modelos más adelante. Las coordenadas exactas solo se guardan si marcas "
+        "la casilla, y nunca aparecen en entidades, registros ni diagnósticos.",
+    ),
+    "data": {
+        "site": t("Location", "Ubicación"),
+        "species": t("Species", "Especie"),
+        "date": t("Date", "Fecha"),
+        "outcome": t("Outcome", "Resultado"),
+        "quantity": t("Quantity (if found)", "Cantidad (si se encontró)"),
+        "habitat": t("Habitat", "Hábitat"),
+        "notes": t("Notes", "Notas"),
+        "save_coordinates": t("Save exact coordinates", "Guardar coordenadas exactas"),
+        "location": t("Exact spot", "Punto exacto"),
+        "photo": t("Photo", "Foto"),
+    },
+    "data_description": {
+        "notes": t(
+            "Exported together with the observation: avoid writing exact places here.",
+            "Se exportan junto con la observación: evita escribir lugares exactos aquí.",
+        ),
+        "location": t(
+            "Only used if 'Save exact coordinates' is ticked.",
+            "Solo se usa si marcas «Guardar coordenadas exactas».",
+        ),
+        "photo": t("Optional, from your media library.", "Opcional, de tu biblioteca multimedia."),
+    },
+}
+SERVICE_EXCEPTIONS = {
+    "not_loaded": {
+        "message": t("MycoMonitor is not set up or not loaded.", "MycoMonitor no está cargado.")
+    },
+    "unknown_location": {
+        "message": t("Unknown location: {location}", "Ubicación desconocida: {location}")
+    },
+    "unknown_species": {
+        "message": t("Unknown species: {species}", "Especie desconocida: {species}")
+    },
+    "invalid_observation": {
+        "message": t("Invalid observation: {error}", "Observación no válida: {error}")
+    },
+    "geojson_needs_coordinates": {
+        "message": t(
+            "A GeoJSON export needs include_coordinates.",
+            "Una exportación GeoJSON necesita include_coordinates.",
+        )
+    },
+    "unknown_observation": {
+        "message": t("No observation with id {id}.", "No hay ninguna observación con id {id}.")
+    },
+}
+
+
+def field(name: dict[str, str], description: dict[str, str]) -> dict[str, Any]:
+    return {"name": name, "description": description}
+
+
+SERVICES = {
+    "record_observation": {
+        "name": t("Record observation", "Registrar observación"),
+        "description": t(
+            "Records a find or an empty visit, with the conditions that preceded it.",
+            "Registra un hallazgo o una salida sin éxito, con las condiciones que lo precedieron.",
+        ),
+        "fields": {
+            "location": field(
+                t("Location", "Ubicación"),
+                t("Location name or sub-entry id.", "Nombre de la ubicación o id de subentrada."),
+            ),
+            "species": field(t("Species", "Especie"), t("Species id.", "Id de la especie.")),
+            "date": field(t("Date", "Fecha"), t("Defaults to today.", "Por defecto, hoy.")),
+            "outcome": field(
+                t("Outcome", "Resultado"), t("Found or not found.", "Encontrada o no.")
+            ),
+            "quantity": field(
+                t("Quantity", "Cantidad"),
+                t("Approximate amount if found.", "Cantidad aproximada si se encontró."),
+            ),
+            "habitat": field(t("Habitat", "Hábitat"), t("Where it was.", "Dónde estaba.")),
+            "notes": field(
+                t("Notes", "Notas"),
+                t("Free text; avoid exact places.", "Texto libre; evita lugares exactos."),
+            ),
+            "latitude": field(
+                t("Latitude", "Latitud"),
+                t("Optional; stored privately.", "Opcional; se guarda en privado."),
+            ),
+            "longitude": field(
+                t("Longitude", "Longitud"),
+                t("Optional; stored privately.", "Opcional; se guarda en privado."),
+            ),
+            "photo": field(
+                t("Photo", "Foto"), t("Media content id or path.", "Id o ruta del archivo.")
+            ),
+        },
+    },
+    "export_observations": {
+        "name": t("Export observations", "Exportar observaciones"),
+        "description": t(
+            "Writes the observations, with their preceding conditions, to the "
+            "mycomonitor/exports folder in the configuration directory.",
+            "Guarda las observaciones, con sus condiciones previas, en la carpeta "
+            "mycomonitor/exports del directorio de configuración.",
+        ),
+        "fields": {
+            "format": field(t("Format", "Formato"), t("CSV or GeoJSON.", "CSV o GeoJSON.")),
+            "include_coordinates": field(
+                t("Include coordinates", "Incluir coordenadas"),
+                t(
+                    "Off by default. Never share an export with coordinates publicly.",
+                    "Desactivado por defecto. Nunca compartas en público una exportación "
+                    "con coordenadas.",
+                ),
+            ),
+            "decimals": field(
+                t("Coordinate decimals", "Decimales de las coordenadas"),
+                t(
+                    "Rounding: 3 decimals is about 100 m, 2 about 1 km.",
+                    "Redondeo: 3 decimales son unos 100 m; 2, aproximadamente 1 km.",
+                ),
+            ),
+            "location": field(
+                t("Location", "Ubicación"),
+                t("Only this location (optional).", "Solo esta ubicación (opcional)."),
+            ),
+        },
+    },
+    "delete_observation": {
+        "name": t("Delete observation", "Borrar observación"),
+        "description": t("Deletes one observation.", "Borra una observación."),
+        "fields": {"id": field(t("ID", "ID"), t("Observation id.", "Id de la observación."))},
+    },
 }
 
 
@@ -215,9 +379,21 @@ def source() -> dict[str, Any]:
                 "init": {
                     "title": t("MycoMonitor options", "Opciones de MycoMonitor"),
                     "menu_options": {
+                        "record_observation": t("Record a visit", "Registrar una salida"),
+                        "manage_observations": t("Manage observations", "Gestionar observaciones"),
                         "settings": t("Settings", "Ajustes"),
                         "species": t("Species thresholds", "Umbrales de especies"),
                     },
+                },
+                "record_observation": RECORD_STEP,
+                "manage_observations": {
+                    "title": t("Manage observations", "Gestionar observaciones"),
+                    "description": t(
+                        "{count} observations recorded. Select the ones to delete (newest first).",
+                        "{count} observaciones registradas. Selecciona las que quieras borrar "
+                        "(las más recientes primero).",
+                    ),
+                    "data": {"delete": t("Delete", "Borrar")},
                 },
                 "settings": {
                     "title": t("Settings", "Ajustes"),
@@ -281,6 +457,7 @@ def source() -> dict[str, Any]:
             },
         },
         "exceptions": {
+            **SERVICE_EXCEPTIONS,
             "update_failed": {
                 "message": t(
                     "Could not update {location}: {error}",
@@ -296,8 +473,26 @@ def source() -> dict[str, Any]:
         },
         "selector": {
             "habitat": {"options": HABITATS},
-            "species": {"options": species_names},
+            "species": {"options": species_names | {"other": t("Other", "Otra")}},
+            "outcome": {
+                "options": {
+                    "found": t("Found", "Encontrada"),
+                    "not_found": t("Searched, not found", "Buscada, no encontrada"),
+                }
+            },
+            "quantity": {
+                "options": {
+                    "none": t("None", "Ninguna"),
+                    "few": t("A few (1-5)", "Pocas (1-5)"),
+                    "some": t("Some (6-20)", "Bastantes (6-20)"),
+                    "many": t("Many (more than 20)", "Muchas (más de 20)"),
+                }
+            },
+            "export_format": {
+                "options": {"csv": t("CSV", "CSV"), "geojson": t("GeoJSON", "GeoJSON")}
+            },
         },
+        "services": SERVICES,
     }
 
 

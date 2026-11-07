@@ -63,6 +63,9 @@
       "soil_temperature_trend_7d": {
         "default": "mdi:chart-line-variant"
       },
+      "observations": {
+        "default": "mdi:notebook-outline"
+      },
       "boletus_edulis": {
         "default": "mdi:mushroom-outline"
       },

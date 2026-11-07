@@ -6,6 +6,25 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-07
+
+### Added
+
+- Observation log: record finds **and empty visits** from the options flow
+  (*Record a visit*) or the `mycomonitor.record_observation` service.
+  Coordinates are optional and only saved when explicitly requested; photos
+  are media-library references.
+- Each observation stores a snapshot: 92 days of raw daily weather from the
+  archive, the indicators and the observed species' index on that day. Failed
+  snapshots are retried automatically.
+- Exports (`mycomonitor.export_observations`): CSV with the preceding
+  conditions, or GeoJSON. Coordinates are left out unless requested, and can
+  be rounded.
+- Deleting observations (options flow or `mycomonitor.delete_observation`).
+- An **Observations** sensor per location (counts and latest entries, no
+  coordinates).
+- Diagnostics report observation counts only.
+
 ## [0.3.0] - 2026-11-07
 
 ### Added

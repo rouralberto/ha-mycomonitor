@@ -15,7 +15,7 @@ Assistant sensors, and explains every number it shows.
 
 ## Status
 
-**0.3.0, alpha.** What works today:
+**0.4.0, alpha.** What works today:
 
 - **Locations in the UI.** Add MycoMonitor, then as many monitoring
   locations as you like, each with its own coordinates, optional altitude and
@@ -35,13 +35,16 @@ Assistant sensors, and explains every number it shows.
   weakest evidence grade and a 7-day outlook. Per location there is also a
   **Favourable conditions** binary sensor. Seasons and thresholds can be
   edited in the UI. See [docs/species](docs/species/README.md).
+- **Observation log:** record finds and empty visits (UI or service). Each
+  keeps the 92 days of weather that preceded it, ready for calibrating models
+  later. Coordinates are private by default and exports leave them out. See
+  [docs/observations.md](docs/observations.md).
 - **Diagnostics** with location coordinates redacted, including how far
   each model grid cell is from the point.
 - English and Spanish.
 
 | Version | Adds |
 |---|---|
-| 0.4 | Recording findings (and empty visits) with the conditions that preceded them; privacy-safe export |
 | 0.5 | Local sensor mapping (rain gauge, soil moisture…), example dashboard *MycoMonitor – Tierra Estella*, HACS release |
 | later | AEMET OpenData, more regional networks, hindcasts, locally calibrated models |
 
@@ -87,6 +90,7 @@ with every threshold's evidence grade and references.
 - [Indicators](docs/indicators.md)
 - [Scientific basis](docs/science.md)
 - [Species models](docs/species/README.md)
+- [Observations and privacy](docs/observations.md)
 
 ## Development
 
