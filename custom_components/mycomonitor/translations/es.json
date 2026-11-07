@@ -1,0 +1,175 @@
+{
+  "config": {
+    "abort": {
+      "single_instance_allowed": "MycoMonitor ya está configurado. Añade ubicaciones desde su página de integración."
+    },
+    "error": {
+      "invalid_location": "Nombre, coordenadas o altitud no válidos.",
+      "no_habitat": "Elige al menos un hábitat."
+    },
+    "step": {
+      "user": {
+        "title": "Añadir una ubicación",
+        "description": "MycoMonitor estima lo favorables que son las condiciones para que fructifiquen las setas. Sus puntuaciones son índices explicables, no probabilidades. Empieza por tu primera ubicación; puedes añadir más después.",
+        "data": {
+          "name": "Nombre",
+          "location": "Ubicación",
+          "altitude": "Altitud",
+          "habitats": "Hábitats"
+        },
+        "data_description": {
+          "name": "Cómo aparece la ubicación en Home Assistant, p. ej. Urbasa.",
+          "location": "El punto a vigilar. Los datos meteorológicos se piden para estas coordenadas exactas.",
+          "altitude": "Opcional. Déjalo vacío para usar la altura del terreno (modelo de 90 m). Las temperaturas se ajustan a esta altitud.",
+          "habitats": "Vegetación de la ubicación. Los modelos de especies (llegan en la 0.3) solo se aplican a hábitats compatibles."
+        }
+      }
+    }
+  },
+  "config_subentries": {
+    "location": {
+      "abort": {
+        "already_configured": "Ya existe una ubicación en estas coordenadas.",
+        "reconfigure_successful": "Se ha actualizado la ubicación."
+      },
+      "entry_type": "Ubicación",
+      "error": {
+        "invalid_location": "Nombre, coordenadas o altitud no válidos.",
+        "no_habitat": "Elige al menos un hábitat."
+      },
+      "initiate_flow": {
+        "user": "Añadir ubicación"
+      },
+      "step": {
+        "user": {
+          "title": "Añadir una ubicación",
+          "data": {
+            "name": "Nombre",
+            "location": "Ubicación",
+            "altitude": "Altitud",
+            "habitats": "Hábitats"
+          },
+          "data_description": {
+            "name": "Cómo aparece la ubicación en Home Assistant, p. ej. Urbasa.",
+            "location": "El punto a vigilar. Los datos meteorológicos se piden para estas coordenadas exactas.",
+            "altitude": "Opcional. Déjalo vacío para usar la altura del terreno (modelo de 90 m). Las temperaturas se ajustan a esta altitud.",
+            "habitats": "Vegetación de la ubicación. Los modelos de especies (llegan en la 0.3) solo se aplican a hábitats compatibles."
+          }
+        },
+        "reconfigure": {
+          "title": "Editar la ubicación",
+          "data": {
+            "name": "Nombre",
+            "location": "Ubicación",
+            "altitude": "Altitud",
+            "habitats": "Hábitats"
+          },
+          "data_description": {
+            "name": "Cómo aparece la ubicación en Home Assistant, p. ej. Urbasa.",
+            "location": "El punto a vigilar. Los datos meteorológicos se piden para estas coordenadas exactas.",
+            "altitude": "Opcional. Déjalo vacío para usar la altura del terreno (modelo de 90 m). Las temperaturas se ajustan a esta altitud.",
+            "habitats": "Vegetación de la ubicación. Los modelos de especies (llegan en la 0.3) solo se aplican a hábitats compatibles."
+          }
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "rain_3d": {
+        "name": "Lluvia 3 días"
+      },
+      "rain_7d": {
+        "name": "Lluvia 7 días"
+      },
+      "rain_14d": {
+        "name": "Lluvia 14 días"
+      },
+      "rain_21d": {
+        "name": "Lluvia 21 días"
+      },
+      "rain_30d": {
+        "name": "Lluvia 30 días"
+      },
+      "api_30d": {
+        "name": "Índice de precipitación antecedente"
+      },
+      "water_balance_14d": {
+        "name": "Balance hídrico 14 días"
+      },
+      "water_balance_30d": {
+        "name": "Balance hídrico 30 días"
+      },
+      "wet_days_14d": {
+        "name": "Días de lluvia (14 días)"
+      },
+      "dry_spell": {
+        "name": "Racha seca"
+      },
+      "wet_streak": {
+        "name": "Racha húmeda"
+      },
+      "temperature_mean_7d": {
+        "name": "Temperatura media 7 días"
+      },
+      "temperature_mean_14d": {
+        "name": "Temperatura media 14 días"
+      },
+      "temperature_mean_21d": {
+        "name": "Temperatura media 21 días"
+      },
+      "temperature_min_7d": {
+        "name": "Temperatura mínima 7 días"
+      },
+      "temperature_max_7d": {
+        "name": "Temperatura máxima 7 días"
+      },
+      "frost_days_7d": {
+        "name": "Días de helada (7 días)"
+      },
+      "frost_days_14d": {
+        "name": "Días de helada (14 días)"
+      },
+      "humidity_mean_7d": {
+        "name": "Humedad media 7 días"
+      },
+      "soil_moisture": {
+        "name": "Humedad del suelo"
+      },
+      "soil_moisture_deep": {
+        "name": "Humedad del suelo 7–28 cm"
+      },
+      "soil_moisture_trend_7d": {
+        "name": "Tendencia de la humedad del suelo"
+      },
+      "soil_temperature": {
+        "name": "Temperatura del suelo"
+      },
+      "soil_temperature_trend_7d": {
+        "name": "Tendencia de la temperatura del suelo"
+      },
+      "last_update": {
+        "name": "Datos actualizados"
+      }
+    }
+  },
+  "exceptions": {
+    "update_failed": {
+      "message": "No se pudo actualizar {location}: {error}"
+    },
+    "no_data": {
+      "message": "No se pudieron obtener datos meteorológicos de ninguna ubicación."
+    }
+  },
+  "selector": {
+    "habitat": {
+      "options": {
+        "beech": "Hayedo",
+        "pine": "Pinar",
+        "oak": "Robledal o encinar",
+        "mixed": "Bosque mixto",
+        "grassland": "Pastos y prados"
+      }
+    }
+  }
+}

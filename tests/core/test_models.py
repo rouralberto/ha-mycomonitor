@@ -8,10 +8,14 @@ import pytest
 
 from custom_components.mycomonitor.core.models import (
     DailySeries,
+    DataKind,
     Location,
     Reading,
+    Source,
     Variable,
     date_range,
+    distance_km,
+    grid_distance_km,
 )
 
 from .helpers import ANALYSIS, FORECAST, START, series_of
@@ -79,3 +83,16 @@ def test_fill_gaps_never_overwrites_and_respects_where() -> None:
 def test_get_missing_variable_returns_none() -> None:
     assert DailySeries().get(P, START) is None
     assert DailySeries().window(P, START, 2) == [None, None]
+
+
+def test_distance_km() -> None:
+    # Pamplona to Estella-Lizarra, in a straight line.
+    assert distance_km(42.8125, -1.6458, 42.6713, -2.0310) == pytest.approx(34.8, abs=1)
+    assert distance_km(42.84, -2.17, 42.84, -2.17) == 0
+
+
+def test_grid_distance_km() -> None:
+    location = Location("Urbasa", 42.84, -2.17)
+    assert grid_distance_km(location, ANALYSIS) is None
+    gridded = Source("p", DataKind.ANALYSIS, grid_latitude=42.84, grid_longitude=-2.08)
+    assert grid_distance_km(location, gridded) == pytest.approx(7.36, abs=0.05)

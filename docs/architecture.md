@@ -63,17 +63,18 @@ three purposes:
 - **outlook:** the window ends on a forecast day;
 - **observation snapshots and hindcasts:** the window ends on a past day.
 
-## Home Assistant layer (0.2 onwards)
+## Home Assistant layer (0.2)
 
 - **Config entries:** one hub entry (single instance) holds global settings
   and the optional AEMET key. **Each location is a config sub-entry** and
   becomes one device:
   - name, coordinates and altitude;
   - habitats (beech, pine, oak, mixed, grassland) and substrate;
-  - forecast model;
-  - optional station and Home Assistant entity mapping.
-- **Coordinator:** one per location. The forecast updates every 3 hours and
-  the history less often.
+  - optional station and Home Assistant entity mapping (later versions).
+- **Coordinator:** one per location, updating every 3 hours (two Open-Meteo
+  calls). A location that fails at startup doesn't block the others and
+  retries every 15 minutes. After a failed update, the last data is kept for
+  up to 12 hours and marked stale.
 - **Entities:** about 20 per location, with the less important ones disabled
   by default:
   - indicator sensors with proper units and state classes;

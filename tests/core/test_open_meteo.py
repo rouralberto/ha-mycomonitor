@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import copy
 from datetime import date, timedelta
-import json
-from pathlib import Path
 from typing import Any
 
 import aiohttp
@@ -20,57 +18,11 @@ from custom_components.mycomonitor.core.providers.base import (
     ProviderResponseError,
 )
 
-FIXTURES = Path(__file__).parents[1] / "fixtures" / "open_meteo"
+from ..fake_open_meteo import FIXTURE_PAST_DAYS, FakeResponse, FakeSession, load, session_with
+
 URBASA = Location("Urbasa", 42.84, -2.17)
 TODAY = date(2026, 11, 7)  # the day the fixtures were recorded
-PAST_DAYS = 35  # what scripts/record_fixtures.py requested
-
-
-def load(name: str) -> dict[str, Any]:
-    return json.loads((FIXTURES / f"{name}.json").read_text())
-
-
-class FakeResponse:
-    def __init__(self, status: int, payload: Any) -> None:
-        self.status = status
-        self._payload = payload
-
-    async def json(self, content_type: str | None = None) -> Any:
-        if isinstance(self._payload, Exception):
-            raise self._payload
-        return self._payload
-
-    async def __aenter__(self) -> FakeResponse:
-        return self
-
-    async def __aexit__(self, *args: object) -> None:
-        return None
-
-
-class FakeSession:
-    """Answers forecast and archive URLs from canned responses, recording calls."""
-
-    def __init__(self, responses: dict[str, FakeResponse | Exception]) -> None:
-        self.responses = responses
-        self.calls: list[tuple[str, dict[str, Any]]] = []
-
-    def get(self, url: str, *, params: dict[str, Any], timeout: object) -> FakeResponse:
-        self.calls.append((url, dict(params)))
-        response = self.responses[url]
-        if isinstance(response, Exception):
-            raise response
-        return response
-
-
-def session_with(
-    forecast: Any | None = None, archive: Any | None = None, status: int = 200
-) -> FakeSession:
-    return FakeSession(
-        {
-            open_meteo.FORECAST_URL: FakeResponse(status, forecast or load("urbasa_forecast")),
-            open_meteo.ARCHIVE_URL: FakeResponse(status, archive or load("urbasa_archive")),
-        }
-    )
+PAST_DAYS = FIXTURE_PAST_DAYS
 
 
 def provider(session: FakeSession, **kwargs: Any) -> open_meteo.OpenMeteoProvider:

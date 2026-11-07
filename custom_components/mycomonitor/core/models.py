@@ -10,6 +10,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date, timedelta
 from enum import StrEnum
+import math
 
 
 class Variable(StrEnum):
@@ -99,6 +100,27 @@ class Location:
             raise ValueError(f"longitude out of range: {self.longitude}")
         if self.altitude is not None and not -500 <= self.altitude <= 9000:
             raise ValueError(f"altitude out of range: {self.altitude}")
+
+
+EARTH_RADIUS_KM = 6371.0088
+
+
+def distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Great-circle (haversine) distance between two points, in km."""
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    dphi = phi2 - phi1
+    dlmb = math.radians(lon2 - lon1)
+    a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlmb / 2) ** 2
+    return 2 * EARTH_RADIUS_KM * math.asin(math.sqrt(a))
+
+
+def grid_distance_km(location: Location, source: Source) -> float | None:
+    """How far the model grid cell behind `source` is from `location`, if known."""
+    if source.grid_latitude is None or source.grid_longitude is None:
+        return None
+    return distance_km(
+        location.latitude, location.longitude, source.grid_latitude, source.grid_longitude
+    )
 
 
 def date_range(end: date, days: int) -> list[date]:

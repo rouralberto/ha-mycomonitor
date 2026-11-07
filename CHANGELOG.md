@@ -6,6 +6,24 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-07
+
+### Added
+
+- Home Assistant integration: a hub config entry with one sub-entry per
+  monitoring location (name, coordinates, optional altitude, habitats),
+  added and edited from the UI.
+- One device per location with indicator sensors (units, device and state
+  classes; less common ones disabled by default), plus a diagnostic
+  "Data updated" sensor.
+- Language-independent entity IDs (`sensor.mycomonitor_<location>_<indicator>`).
+- Updates every 3 hours. A failing location doesn't block the others and
+  retries every 15 minutes. After a failed update, the last data is kept for
+  up to 12 hours.
+- Diagnostics with redacted coordinates and model grid distances.
+- English and Spanish translations.
+- hassfest and HACS validation in CI.
+
 ## [0.1.0] - 2026-11-07
 
 ### Added

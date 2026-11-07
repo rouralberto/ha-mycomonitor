@@ -1,0 +1,60 @@
+{
+  "entity": {
+    "sensor": {
+      "rain_3d": {
+        "default": "mdi:weather-rainy"
+      },
+      "rain_7d": {
+        "default": "mdi:weather-rainy"
+      },
+      "rain_14d": {
+        "default": "mdi:weather-rainy"
+      },
+      "rain_21d": {
+        "default": "mdi:weather-rainy"
+      },
+      "rain_30d": {
+        "default": "mdi:weather-rainy"
+      },
+      "api_30d": {
+        "default": "mdi:water-plus"
+      },
+      "water_balance_14d": {
+        "default": "mdi:scale-balance"
+      },
+      "water_balance_30d": {
+        "default": "mdi:scale-balance"
+      },
+      "wet_days_14d": {
+        "default": "mdi:weather-pouring"
+      },
+      "dry_spell": {
+        "default": "mdi:weather-sunny"
+      },
+      "wet_streak": {
+        "default": "mdi:umbrella"
+      },
+      "frost_days_7d": {
+        "default": "mdi:snowflake-thermometer"
+      },
+      "frost_days_14d": {
+        "default": "mdi:snowflake-thermometer"
+      },
+      "soil_moisture": {
+        "default": "mdi:water-percent"
+      },
+      "soil_moisture_deep": {
+        "default": "mdi:water-percent"
+      },
+      "soil_moisture_trend_7d": {
+        "default": "mdi:chart-line-variant"
+      },
+      "soil_temperature": {
+        "default": "mdi:thermometer-lines"
+      },
+      "soil_temperature_trend_7d": {
+        "default": "mdi:chart-line-variant"
+      }
+    }
+  }
+}

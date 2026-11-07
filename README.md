@@ -15,26 +15,50 @@ Assistant sensors, and explains every number it shows.
 
 ## Status
 
-**0.1.0, alpha: the environmental core only.** No Home Assistant entities
-yet. What works today:
+**0.2.0, alpha.** What works today:
 
-- Open-Meteo provider: about 3 months of history plus a 16-day forecast for
-  any coordinates, with every value tagged as *analysis* (modelled past) or
-  *forecast*.
-- Indicator engine: rainfall over 3–30 days, antecedent precipitation index,
-  climatic water balance, temperatures, frost days, dry spells, soil
-  moisture and soil temperature with trends. They work for today, for past
-  days and for forecast days.
+- **Locations in the UI.** Add MycoMonitor, then as many monitoring
+  locations as you like, each with its own coordinates, optional altitude and
+  habitats. No YAML.
+- **Indicator sensors per location** (one device each): rainfall over 3–30
+  days, antecedent precipitation index, climatic water balance, rainy days,
+  dry spell, wet streak, air temperatures, frost days, humidity, soil moisture
+  and soil temperature with trends. The less common ones are disabled by
+  default. Attributes show the window, data coverage and whether the value
+  includes forecast data.
+- **Data:** Open-Meteo history (about 3 months) plus a 16-day forecast,
+  updated every 3 hours. If an update fails, the last data is kept for up to
+  12 hours.
+- **Diagnostics** with location coordinates redacted, including how far
+  each model grid cell is from the point.
+- English and Spanish.
 
 | Version | Adds |
 |---|---|
-| 0.2 | Home Assistant integration: hub + one sub-entry per location, indicator sensors, diagnostics, Spanish and English |
 | 0.3 | Species engine and seven species profiles, suitability index sensors, "favourable conditions" binary sensor |
 | 0.4 | Recording findings (and empty visits) with the conditions that preceded them; privacy-safe export |
 | 0.5 | Local sensor mapping (rain gauge, soil moisture…), example dashboard *MycoMonitor – Tierra Estella*, HACS release |
 | later | AEMET OpenData, more regional networks, hindcasts, locally calibrated models |
 
 The design is in [docs/architecture.md](docs/architecture.md).
+
+## Installation
+
+Until the HACS release, add this repository to HACS as a custom repository
+(category *Integration*), or copy `custom_components/mycomonitor` into your
+Home Assistant `config/custom_components/`. Then restart Home Assistant.
+Requires Home Assistant 2026.10 or newer.
+
+## Configuration
+
+1. **Settings → Devices & services → Add integration → MycoMonitor.** Enter
+   your first location: a name, the point on the map, optionally its altitude,
+   and its habitats.
+2. Add more locations from the MycoMonitor page (**Add location**). Edit one
+   with its ⋮ menu → **Reconfigure**.
+
+Entity IDs don't depend on the UI language, e.g.
+`sensor.mycomonitor_urbasa_rain_7d`.
 
 ## Species planned for 0.3
 

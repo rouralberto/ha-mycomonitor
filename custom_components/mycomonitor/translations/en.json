@@ -1,0 +1,175 @@
+{
+  "config": {
+    "abort": {
+      "single_instance_allowed": "MycoMonitor is already set up. Add locations from its integration page."
+    },
+    "error": {
+      "invalid_location": "Invalid name, coordinates or altitude.",
+      "no_habitat": "Choose at least one habitat."
+    },
+    "step": {
+      "user": {
+        "title": "Add a monitoring location",
+        "description": "MycoMonitor estimates how favourable conditions are for mushrooms to fruit. Its scores are explainable indices, not probabilities. Start with your first location; you can add more later.",
+        "data": {
+          "name": "Name",
+          "location": "Location",
+          "altitude": "Altitude",
+          "habitats": "Habitats"
+        },
+        "data_description": {
+          "name": "How the location appears in Home Assistant, e.g. Urbasa.",
+          "location": "The point to monitor. Weather data is fetched for these exact coordinates.",
+          "altitude": "Optional. Leave empty to use the terrain height (90 m model). Temperatures are adjusted to this altitude.",
+          "habitats": "Vegetation at the location. Species models (coming in 0.3) only run for compatible habitats."
+        }
+      }
+    }
+  },
+  "config_subentries": {
+    "location": {
+      "abort": {
+        "already_configured": "A location at these coordinates already exists.",
+        "reconfigure_successful": "The location was updated."
+      },
+      "entry_type": "Location",
+      "error": {
+        "invalid_location": "Invalid name, coordinates or altitude.",
+        "no_habitat": "Choose at least one habitat."
+      },
+      "initiate_flow": {
+        "user": "Add location"
+      },
+      "step": {
+        "user": {
+          "title": "Add a monitoring location",
+          "data": {
+            "name": "Name",
+            "location": "Location",
+            "altitude": "Altitude",
+            "habitats": "Habitats"
+          },
+          "data_description": {
+            "name": "How the location appears in Home Assistant, e.g. Urbasa.",
+            "location": "The point to monitor. Weather data is fetched for these exact coordinates.",
+            "altitude": "Optional. Leave empty to use the terrain height (90 m model). Temperatures are adjusted to this altitude.",
+            "habitats": "Vegetation at the location. Species models (coming in 0.3) only run for compatible habitats."
+          }
+        },
+        "reconfigure": {
+          "title": "Edit monitoring location",
+          "data": {
+            "name": "Name",
+            "location": "Location",
+            "altitude": "Altitude",
+            "habitats": "Habitats"
+          },
+          "data_description": {
+            "name": "How the location appears in Home Assistant, e.g. Urbasa.",
+            "location": "The point to monitor. Weather data is fetched for these exact coordinates.",
+            "altitude": "Optional. Leave empty to use the terrain height (90 m model). Temperatures are adjusted to this altitude.",
+            "habitats": "Vegetation at the location. Species models (coming in 0.3) only run for compatible habitats."
+          }
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "rain_3d": {
+        "name": "Rainfall 3 days"
+      },
+      "rain_7d": {
+        "name": "Rainfall 7 days"
+      },
+      "rain_14d": {
+        "name": "Rainfall 14 days"
+      },
+      "rain_21d": {
+        "name": "Rainfall 21 days"
+      },
+      "rain_30d": {
+        "name": "Rainfall 30 days"
+      },
+      "api_30d": {
+        "name": "Antecedent precipitation index"
+      },
+      "water_balance_14d": {
+        "name": "Water balance 14 days"
+      },
+      "water_balance_30d": {
+        "name": "Water balance 30 days"
+      },
+      "wet_days_14d": {
+        "name": "Rainy days (14 days)"
+      },
+      "dry_spell": {
+        "name": "Dry spell"
+      },
+      "wet_streak": {
+        "name": "Wet streak"
+      },
+      "temperature_mean_7d": {
+        "name": "Mean temperature 7 days"
+      },
+      "temperature_mean_14d": {
+        "name": "Mean temperature 14 days"
+      },
+      "temperature_mean_21d": {
+        "name": "Mean temperature 21 days"
+      },
+      "temperature_min_7d": {
+        "name": "Minimum temperature 7 days"
+      },
+      "temperature_max_7d": {
+        "name": "Maximum temperature 7 days"
+      },
+      "frost_days_7d": {
+        "name": "Frost days (7 days)"
+      },
+      "frost_days_14d": {
+        "name": "Frost days (14 days)"
+      },
+      "humidity_mean_7d": {
+        "name": "Mean humidity 7 days"
+      },
+      "soil_moisture": {
+        "name": "Soil moisture"
+      },
+      "soil_moisture_deep": {
+        "name": "Soil moisture 7–28 cm"
+      },
+      "soil_moisture_trend_7d": {
+        "name": "Soil moisture trend"
+      },
+      "soil_temperature": {
+        "name": "Soil temperature"
+      },
+      "soil_temperature_trend_7d": {
+        "name": "Soil temperature trend"
+      },
+      "last_update": {
+        "name": "Data updated"
+      }
+    }
+  },
+  "exceptions": {
+    "update_failed": {
+      "message": "Could not update {location}: {error}"
+    },
+    "no_data": {
+      "message": "Could not fetch weather data for any location."
+    }
+  },
+  "selector": {
+    "habitat": {
+      "options": {
+        "beech": "Beech forest",
+        "pine": "Pine forest",
+        "oak": "Oak forest",
+        "mixed": "Mixed forest",
+        "grassland": "Grassland and meadows"
+      }
+    }
+  }
+}

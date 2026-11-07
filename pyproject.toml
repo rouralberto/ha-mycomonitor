@@ -22,4 +22,4 @@ known-first-party = ["custom_components"]
 python_version = "3.14"
 strict = true
 warn_unreachable = true
-files = ["custom_components/mycomonitor/core"]
+files = ["custom_components/mycomonitor"]
