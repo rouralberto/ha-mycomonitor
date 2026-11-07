@@ -23,3 +23,8 @@ STALE_DATA_GRACE: Final = timedelta(hours=12)
 
 PAST_DAYS: Final = 92
 FORECAST_DAYS: Final = 16
+
+# Hub options
+CONF_FAVORABLE_THRESHOLD: Final = "favorable_threshold"
+DEFAULT_FAVORABLE_THRESHOLD: Final = 60
+CONF_SPECIES_OVERRIDES: Final = "species"  # {species_id: {"season": {...}, "curves": {...}}}

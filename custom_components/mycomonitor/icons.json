@@ -1,5 +1,13 @@
 {
   "entity": {
+    "binary_sensor": {
+      "favorable_conditions": {
+        "default": "mdi:mushroom-off-outline",
+        "state": {
+          "on": "mdi:mushroom"
+        }
+      }
+    },
     "sensor": {
       "rain_3d": {
         "default": "mdi:weather-rainy"
@@ -54,6 +62,27 @@
       },
       "soil_temperature_trend_7d": {
         "default": "mdi:chart-line-variant"
+      },
+      "boletus_edulis": {
+        "default": "mdi:mushroom-outline"
+      },
+      "calocybe_gambosa": {
+        "default": "mdi:mushroom-outline"
+      },
+      "cantharellus_cibarius": {
+        "default": "mdi:mushroom-outline"
+      },
+      "craterellus_cornucopioides": {
+        "default": "mdi:mushroom-outline"
+      },
+      "hydnum_repandum": {
+        "default": "mdi:mushroom-outline"
+      },
+      "lactarius_deliciosus": {
+        "default": "mdi:mushroom-outline"
+      },
+      "lepista_nuda": {
+        "default": "mdi:mushroom-outline"
       }
     }
   }

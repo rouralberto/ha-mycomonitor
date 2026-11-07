@@ -21,7 +21,7 @@
           "name": "Cómo aparece la ubicación en Home Assistant, p. ej. Urbasa.",
           "location": "El punto a vigilar. Los datos meteorológicos se piden para estas coordenadas exactas.",
           "altitude": "Opcional. Déjalo vacío para usar la altura del terreno (modelo de 90 m). Las temperaturas se ajustan a esta altitud.",
-          "habitats": "Vegetación de la ubicación. Los modelos de especies (llegan en la 0.3) solo se aplican a hábitats compatibles."
+          "habitats": "Vegetación de la ubicación. Solo las especies compatibles con estos hábitats tienen sensor."
         }
       }
     }
@@ -53,7 +53,7 @@
             "name": "Cómo aparece la ubicación en Home Assistant, p. ej. Urbasa.",
             "location": "El punto a vigilar. Los datos meteorológicos se piden para estas coordenadas exactas.",
             "altitude": "Opcional. Déjalo vacío para usar la altura del terreno (modelo de 90 m). Las temperaturas se ajustan a esta altitud.",
-            "habitats": "Vegetación de la ubicación. Los modelos de especies (llegan en la 0.3) solo se aplican a hábitats compatibles."
+            "habitats": "Vegetación de la ubicación. Solo las especies compatibles con estos hábitats tienen sensor."
           }
         },
         "reconfigure": {
@@ -68,13 +68,66 @@
             "name": "Cómo aparece la ubicación en Home Assistant, p. ej. Urbasa.",
             "location": "El punto a vigilar. Los datos meteorológicos se piden para estas coordenadas exactas.",
             "altitude": "Opcional. Déjalo vacío para usar la altura del terreno (modelo de 90 m). Las temperaturas se ajustan a esta altitud.",
-            "habitats": "Vegetación de la ubicación. Los modelos de especies (llegan en la 0.3) solo se aplican a hábitats compatibles."
+            "habitats": "Vegetación de la ubicación. Solo las especies compatibles con estos hábitats tienen sensor."
           }
         }
       }
     }
   },
+  "options": {
+    "error": {
+      "invalid_override": "Valor no válido: {error}"
+    },
+    "step": {
+      "init": {
+        "title": "Opciones de MycoMonitor",
+        "menu_options": {
+          "settings": "Ajustes",
+          "species": "Umbrales de especies"
+        }
+      },
+      "settings": {
+        "title": "Ajustes",
+        "data": {
+          "favorable_threshold": "Umbral de condiciones favorables"
+        },
+        "data_description": {
+          "favorable_threshold": "El sensor de condiciones favorables de una ubicación se activa cuando el índice de alguna especie alcanza este valor (0-100)."
+        }
+      },
+      "species": {
+        "title": "Umbrales de especies",
+        "description": "Elige una especie para ajustar su temporada y sus curvas de respuesta.",
+        "data": {
+          "species": "Especie"
+        }
+      },
+      "species_edit": {
+        "title": "{species}",
+        "description": "Las fechas de temporada son MM-DD. Cada curva es una lista de puntos indicador:puntuación (puntuación 0-1), p. ej. 10:0.05, 40:0.5, 80:1; los valores intermedios se interpolan. Factores:\n{factors}\n\nConsulta docs/species para ver la evidencia de cada valor por defecto.",
+        "data": {
+          "season_start": "Inicio de temporada",
+          "season_peak_start": "Inicio del pico",
+          "season_peak_end": "Fin del pico",
+          "season_end": "Fin de temporada",
+          "curve_rain": "Lluvia",
+          "curve_water_balance": "Balance hídrico",
+          "curve_temperature": "Temperatura",
+          "curve_frost": "Heladas (limitante)",
+          "curve_heat": "Calor",
+          "curve_wet_days": "Días de lluvia",
+          "curve_soil_warming": "Calentamiento del suelo",
+          "reset": "Restablecer valores por defecto"
+        }
+      }
+    }
+  },
   "entity": {
+    "binary_sensor": {
+      "favorable_conditions": {
+        "name": "Condiciones favorables"
+      }
+    },
     "sensor": {
       "rain_3d": {
         "name": "Lluvia 3 días"
@@ -150,6 +203,111 @@
       },
       "last_update": {
         "name": "Datos actualizados"
+      },
+      "boletus_edulis": {
+        "name": "Boletus (grupo edulis)",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Fuera de temporada",
+              "unfavorable": "Desfavorable",
+              "low": "Baja",
+              "moderate": "Moderada",
+              "favorable": "Favorable",
+              "very_favorable": "Muy favorable"
+            }
+          }
+        }
+      },
+      "calocybe_gambosa": {
+        "name": "Perretxiko (seta de San Jorge)",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Fuera de temporada",
+              "unfavorable": "Desfavorable",
+              "low": "Baja",
+              "moderate": "Moderada",
+              "favorable": "Favorable",
+              "very_favorable": "Muy favorable"
+            }
+          }
+        }
+      },
+      "cantharellus_cibarius": {
+        "name": "Rebozuelo",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Fuera de temporada",
+              "unfavorable": "Desfavorable",
+              "low": "Baja",
+              "moderate": "Moderada",
+              "favorable": "Favorable",
+              "very_favorable": "Muy favorable"
+            }
+          }
+        }
+      },
+      "craterellus_cornucopioides": {
+        "name": "Trompeta de los muertos",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Fuera de temporada",
+              "unfavorable": "Desfavorable",
+              "low": "Baja",
+              "moderate": "Moderada",
+              "favorable": "Favorable",
+              "very_favorable": "Muy favorable"
+            }
+          }
+        }
+      },
+      "hydnum_repandum": {
+        "name": "Lengua de vaca",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Fuera de temporada",
+              "unfavorable": "Desfavorable",
+              "low": "Baja",
+              "moderate": "Moderada",
+              "favorable": "Favorable",
+              "very_favorable": "Muy favorable"
+            }
+          }
+        }
+      },
+      "lactarius_deliciosus": {
+        "name": "Níscalo",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Fuera de temporada",
+              "unfavorable": "Desfavorable",
+              "low": "Baja",
+              "moderate": "Moderada",
+              "favorable": "Favorable",
+              "very_favorable": "Muy favorable"
+            }
+          }
+        }
+      },
+      "lepista_nuda": {
+        "name": "Pie azul",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Fuera de temporada",
+              "unfavorable": "Desfavorable",
+              "low": "Baja",
+              "moderate": "Moderada",
+              "favorable": "Favorable",
+              "very_favorable": "Muy favorable"
+            }
+          }
+        }
       }
     }
   },
@@ -169,6 +327,17 @@
         "oak": "Robledal o encinar",
         "mixed": "Bosque mixto",
         "grassland": "Pastos y prados"
+      }
+    },
+    "species": {
+      "options": {
+        "boletus_edulis": "Boletus (grupo edulis)",
+        "calocybe_gambosa": "Perretxiko (seta de San Jorge)",
+        "cantharellus_cibarius": "Rebozuelo",
+        "craterellus_cornucopioides": "Trompeta de los muertos",
+        "hydnum_repandum": "Lengua de vaca",
+        "lactarius_deliciosus": "Níscalo",
+        "lepista_nuda": "Pie azul"
       }
     }
   }

@@ -26,6 +26,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .coordinator import LocationCoordinator, LocationData
 from .core.models import DataKind
+from .core.species.engine import Category, SpeciesProfile
 from .entity import MycoMonitorEntity
 
 if TYPE_CHECKING:
@@ -118,6 +119,9 @@ async def async_setup_entry(
         entities: list[SensorEntity] = [
             IndicatorSensor(coordinator, description) for description in INDICATOR_SENSORS
         ]
+        entities.extend(
+            SpeciesSensor(coordinator, profile) for profile in coordinator.profiles.values()
+        )
         entities.append(LastUpdateSensor(coordinator))
         async_add_entities(entities, config_subentry_id=subentry_id)
 
@@ -152,6 +156,55 @@ class IndicatorSensor(MycoMonitorEntity, SensorEntity):
             "coverage": round(indicator.coverage, 2),
             "data": sorted(kind.value for kind in indicator.kinds),
             "includes_forecast": DataKind.FORECAST in indicator.kinds,
+        }
+
+
+class SpeciesSensor(MycoMonitorEntity, SensorEntity):
+    """Suitability index (0-100) for one species at one location. Not a probability."""
+
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_suggested_display_precision = 0
+    _unrecorded_attributes = frozenset(
+        {"factors", "outlook", "scientific_name", "evidence", "data", "limiting_factor"}
+    )
+
+    def __init__(self, coordinator: LocationCoordinator, profile: SpeciesProfile) -> None:
+        super().__init__(coordinator, Platform.SENSOR, profile.id)
+        self._profile = profile
+        self._attr_translation_key = profile.id
+
+    @property
+    def native_value(self) -> float | None:
+        result = self.coordinator.data.species.get(self._profile.id)
+        return result.index if result is not None else None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        result = self.coordinator.data.species.get(self._profile.id)
+        if result is None:
+            return {}
+        return {
+            "category": result.category.value if result.category else None,
+            "in_season": result.category is not Category.OUT_OF_SEASON,
+            "limiting_factor": result.limiting_factor,
+            "evidence": result.evidence,
+            "scientific_name": self._profile.scientific_name,
+            "data": sorted(kind.value for kind in result.kinds),
+            "includes_forecast": DataKind.FORECAST in result.kinds,
+            "factors": [
+                {
+                    "id": f.id,
+                    "indicator": f.indicator,
+                    "lag_days": f.lag,
+                    "value": round(f.value, 2) if f.value is not None else None,
+                    "unit": f.unit,
+                    "score": round(f.score, 2) if f.score is not None else None,
+                    "role": f.role.value,
+                    "grade": f.grade,
+                }
+                for f in result.factors
+            ],
+            "outlook": [{"date": day.isoformat(), "index": index} for day, index in result.outlook],
         }
 
 

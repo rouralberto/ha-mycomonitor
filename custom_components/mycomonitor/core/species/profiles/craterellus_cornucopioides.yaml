@@ -1,0 +1,48 @@
+id: craterellus_cornucopioides
+scientific_name: Craterellus cornucopioides
+names:
+  es: Trompeta de los muertos
+  en: Black trumpet
+habitats: [beech, oak, mixed]
+notes: Ectomycorrhizal, mostly under beech and oaks, often in moss on moist ground.
+season:
+  start: "08-15"
+  peak_start: "09-20"
+  peak_end: "11-30"
+  end: "12-31"
+season_grade: C
+season_source: "GBIF near Tierra Estella, n=40: Jun 2, Aug 1, Sep 7, Oct 17, Nov 8, Dec 4, Jan 1."
+references: [gbif_tierra_estella, field_guides]
+factors:
+  - id: rain
+    indicator: rain_30d
+    lag: 5
+    role: soft
+    weight: 3
+    curve: [[20, 0.05], [60, 0.5], [110, 0.9], [160, 1.0]]
+    grade: C
+    rationale: Needs persistent moisture; responds to sustained rather than single rains. Values are ours.
+    references: [field_guides]
+  - id: wet_days
+    indicator: wet_days_14d
+    role: soft
+    weight: 1
+    curve: [[0, 0.1], [3, 0.5], [6, 1.0]]
+    grade: C
+    rationale: Several rainy days in the last fortnight keep the litter moist. Values are ours.
+    references: [field_guides]
+  - id: temperature
+    indicator: temperature_mean_14d
+    role: soft
+    weight: 2
+    curve: [[3, 0.0], [7, 0.6], [10, 1.0], [16, 1.0], [20, 0.3]]
+    grade: C
+    rationale: Mild autumn temperatures; the range is ours.
+    references: [field_guides, gbif_tierra_estella]
+  - id: frost
+    indicator: frost_days_7d
+    role: gate
+    curve: [[0, 1.0], [2, 0.6], [5, 0.1]]
+    grade: C
+    rationale: Frosts end the season. Counts are ours.
+    references: [field_guides]

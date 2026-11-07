@@ -22,10 +22,16 @@ from .const import (
     STALE_DATA_GRACE,
     UPDATE_INTERVAL,
 )
-from .core.indicators import Indicator, compute_indicators
+from .core.indicators import Indicator
 from .core.models import Location, Source
 from .core.providers.base import ProviderError
 from .core.providers.open_meteo import OpenMeteoProvider
+from .core.species.engine import (
+    SpeciesProfile,
+    SpeciesResult,
+    indicator_lookup,
+    score_with_outlook,
+)
 
 if TYPE_CHECKING:
     from . import MycoMonitorConfigEntry
@@ -42,6 +48,7 @@ class LocationData:
     sources: tuple[Source, ...]
     warnings: tuple[str, ...]
     fetched_at: datetime
+    species: dict[str, SpeciesResult]
     stale: bool = False
 
 
@@ -61,7 +68,11 @@ class LocationCoordinator(DataUpdateCoordinator[LocationData]):
     config_entry: MycoMonitorConfigEntry
 
     def __init__(
-        self, hass: HomeAssistant, entry: MycoMonitorConfigEntry, subentry: ConfigSubentry
+        self,
+        hass: HomeAssistant,
+        entry: MycoMonitorConfigEntry,
+        subentry: ConfigSubentry,
+        profiles: dict[str, SpeciesProfile],
     ) -> None:
         super().__init__(
             hass,
@@ -73,6 +84,12 @@ class LocationCoordinator(DataUpdateCoordinator[LocationData]):
         self.subentry_id = subentry.subentry_id
         self.location = location_from_subentry(subentry)
         self.habitats: list[str] = list(subentry.data.get("habitats", []))
+        # Only species whose habitats match this location's.
+        self.profiles = {
+            pid: profile
+            for pid, profile in profiles.items()
+            if profile.compatible_with(self.habitats)
+        }
         self.provider = OpenMeteoProvider(async_get_clientsession(hass))
 
     async def _async_update_data(self) -> LocationData:
@@ -100,9 +117,14 @@ class LocationCoordinator(DataUpdateCoordinator[LocationData]):
         self.update_interval = UPDATE_INTERVAL
         for warning in result.warnings:
             _LOGGER.debug("%s: %s", self.location.name, warning)
+        lookup = indicator_lookup(result.series)
         return LocationData(
             today=result.today,
-            indicators=compute_indicators(result.series, result.today),
+            indicators=dict(lookup(result.today)),
+            species={
+                pid: score_with_outlook(profile, lookup, result.today)
+                for pid, profile in self.profiles.items()
+            },
             sources=tuple(
                 sorted(result.series.sources(), key=lambda s: (s.kind, s.provider, s.model or ""))
             ),

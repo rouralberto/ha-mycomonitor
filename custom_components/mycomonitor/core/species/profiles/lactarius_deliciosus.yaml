@@ -1,0 +1,52 @@
+id: lactarius_deliciosus
+scientific_name: Lactarius deliciosus group
+names:
+  es: Níscalo
+  en: Saffron milk cap
+habitats: [pine]
+notes: Ectomycorrhizal with pines only. The best-studied species here for Spanish pine stands.
+season:
+  start: "09-20"
+  peak_start: "10-15"
+  peak_end: "12-15"
+  end: "01-31"
+season_grade: C
+season_source: "GBIF near Tierra Estella, n=73: Sep 1, Oct 14, Nov 32, Dec 22, Jan 4."
+references: [gbif_tierra_estella, martinezpena2012, karavani2018, agreda2015, martinezdearagon2007]
+factors:
+  - id: rain
+    indicator: rain_30d
+    lag: 7
+    role: soft
+    weight: 3
+    curve: [[15, 0.05], [50, 0.5], [100, 0.9], [150, 1.0]]
+    grade: B
+    rationale: >-
+      Autumn rain drives yields in pine stands, with precipitation acting with a delay of about
+      a month. Rain over the 30 days ending a week before; values are ours.
+    references: [karavani2018, martinezpena2012, martinezdearagon2007]
+  - id: water_balance
+    indicator: water_balance_30d
+    role: soft
+    weight: 2
+    curve: [[-60, 0.1], [-20, 0.5], [10, 0.9], [30, 1.0]]
+    grade: B
+    rationale: >-
+      In Spanish pine stands, water balance and soil moisture explained yields better than rain
+      alone. Values are ours.
+    references: [agreda2015, karavani2018]
+  - id: temperature
+    indicator: temperature_mean_14d
+    role: soft
+    weight: 2
+    curve: [[2, 0.0], [5, 0.5], [8, 1.0], [14, 1.0], [18, 0.4], [22, 0.0]]
+    grade: C
+    rationale: Mild autumn temperatures; the range is ours, informed by the local season.
+    references: [field_guides, gbif_tierra_estella]
+  - id: frost
+    indicator: frost_days_7d
+    role: gate
+    curve: [[0, 1.0], [3, 0.6], [6, 0.2]]
+    grade: C
+    rationale: Tolerates light frosts; repeated frosts end the season. Counts are ours.
+    references: [field_guides]

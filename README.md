@@ -15,7 +15,7 @@ Assistant sensors, and explains every number it shows.
 
 ## Status
 
-**0.2.0, alpha.** What works today:
+**0.3.0, alpha.** What works today:
 
 - **Locations in the UI.** Add MycoMonitor, then as many monitoring
   locations as you like, each with its own coordinates, optional altitude and
@@ -29,13 +29,18 @@ Assistant sensors, and explains every number it shows.
 - **Data:** Open-Meteo history (about 3 months) plus a 16-day forecast,
   updated every 3 hours. If an update fails, the last data is kept for up to
   12 hours.
+- **Species suitability:** an index from 0 to 100 per species and location
+  (only for species that match the location's habitats). Attributes include
+  the category, every factor's value and score, the limiting factor, the
+  weakest evidence grade and a 7-day outlook. Per location there is also a
+  **Favourable conditions** binary sensor. Seasons and thresholds can be
+  edited in the UI. See [docs/species](docs/species/README.md).
 - **Diagnostics** with location coordinates redacted, including how far
   each model grid cell is from the point.
 - English and Spanish.
 
 | Version | Adds |
 |---|---|
-| 0.3 | Species engine and seven species profiles, suitability index sensors, "favourable conditions" binary sensor |
 | 0.4 | Recording findings (and empty visits) with the conditions that preceded them; privacy-safe export |
 | 0.5 | Local sensor mapping (rain gauge, soil moisture…), example dashboard *MycoMonitor – Tierra Estella*, HACS release |
 | later | AEMET OpenData, more regional networks, hindcasts, locally calibrated models |
@@ -60,12 +65,20 @@ Requires Home Assistant 2026.10 or newer.
 Entity IDs don't depend on the UI language, e.g.
 `sensor.mycomonitor_urbasa_rain_7d`.
 
-## Species planned for 0.3
+## Species
 
-*Boletus edulis* group, *Lactarius deliciosus*, *Craterellus cornucopioides*,
-*Hydnum repandum*, *Lepista nuda*, *Cantharellus cibarius* and *Calocybe
-gambosa*. Each gets its own model, with every threshold graded by the
-strength of its evidence and configurable by the user.
+| Species | Spanish | Habitats |
+|---|---|---|
+| *Boletus edulis* group | Boletus | beech, oak, pine, mixed |
+| *Lactarius deliciosus* | Níscalo | pine |
+| *Craterellus cornucopioides* | Trompeta de los muertos | beech, oak, mixed |
+| *Hydnum repandum* | Lengua de vaca | beech, oak, pine, mixed |
+| *Lepista nuda* | Pie azul | all, including grassland |
+| *Cantharellus cibarius* | Rebozuelo | beech, oak, pine, mixed |
+| *Calocybe gambosa* | Perretxiko | grassland |
+
+Each has its own model, documented in [docs/species](docs/species/README.md)
+with every threshold's evidence grade and references.
 
 ## Documentation
 
@@ -73,6 +86,7 @@ strength of its evidence and configurable by the user.
 - [Data sources and their limits](docs/data-sources.md)
 - [Indicators](docs/indicators.md)
 - [Scientific basis](docs/science.md)
+- [Species models](docs/species/README.md)
 
 ## Development
 

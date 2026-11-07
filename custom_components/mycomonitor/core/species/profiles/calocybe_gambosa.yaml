@@ -1,0 +1,51 @@
+id: calocybe_gambosa
+scientific_name: Calocybe gambosa
+names:
+  es: Perretxiko (seta de San Jorge)
+  en: St George's mushroom
+habitats: [grassland]
+notes: >-
+  Spring species of calcareous pastures, meadows and forest edges, often in rings near hawthorn
+  and blackthorn. No peer-reviewed study of its weather response was found: everything here is
+  grade C or D.
+season:
+  start: "03-20"
+  peak_start: "04-10"
+  peak_end: "05-25"
+  end: "06-20"
+season_grade: C
+season_source: "GBIF near Tierra Estella, n=43: Apr 10, May 26, Jun 6, Oct 1."
+references: [gbif_tierra_estella, micocyl_bulletins, field_guides]
+factors:
+  - id: rain
+    indicator: rain_21d
+    lag: 5
+    role: soft
+    weight: 3
+    curve: [[10, 0.05], [35, 0.5], [70, 0.9], [110, 1.0]]
+    grade: C
+    rationale: Regional bulletins link spring rain and soil moisture to its appearance. Values are ours.
+    references: [micocyl_bulletins]
+  - id: temperature
+    indicator: temperature_mean_14d
+    role: soft
+    weight: 2
+    curve: [[4, 0.0], [7, 0.6], [10, 1.0], [15, 1.0], [19, 0.3]]
+    grade: C
+    rationale: Mild spring temperatures. The range is ours.
+    references: [micocyl_bulletins, field_guides]
+  - id: soil_warming
+    indicator: soil_temperature_trend_7d
+    role: soft
+    weight: 1
+    curve: [[-1.5, 0.4], [0, 0.8], [1, 1.0]]
+    grade: D
+    rationale: Placeholder; assumes warming soil favours spring fruiting. To replace with evidence.
+    references: []
+  - id: frost
+    indicator: frost_days_7d
+    role: gate
+    curve: [[0, 1.0], [3, 0.6], [6, 0.2]]
+    grade: C
+    rationale: Late frosts set it back. Counts are ours.
+    references: [field_guides]

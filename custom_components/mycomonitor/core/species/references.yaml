@@ -1,0 +1,39 @@
+# Sources cited by the species profiles. Keys are referenced from profiles/*.yaml.
+agreda2015: >-
+  Ágreda, T., Águeda, B., Olano, J. M., Vicente-Serrano, S. M. & Fernández-Toirán, M. (2015).
+  Increased evapotranspiration demand in a Mediterranean climate might cause a decline in fungal
+  yields under global warming. Global Change Biology 21(9): 3499-3510. doi:10.1111/gcb.12960
+karavani2018: >-
+  Karavani, A. et al. (2018). Effect of climatic and soil moisture conditions on mushroom
+  productivity and related ecosystem services in Mediterranean pine stands facing climate change.
+  Agricultural and Forest Meteorology 248: 432-440.
+martinezdearagon2007: >-
+  Martínez de Aragón, J., Bonet, J. A., Fischer, C. R. & Colinas, C. (2007). Productivity of
+  ectomycorrhizal and selected edible saprotrophic fungi in pine forests of the pre-Pyrenees
+  mountains, Spain. Forest Ecology and Management 252: 239-256. doi:10.1016/j.foreco.2007.06.040
+martinezpena2012: >-
+  Martínez-Peña, F. et al. (2012). Yield models for ectomycorrhizal mushrooms in Pinus sylvestris
+  forests with special focus on Boletus edulis and Lactarius group deliciosus. Forest Ecology
+  and Management.
+porcini_preprint2025: >-
+  Predicting porcini: a decade of sporocarp monitoring reveals the meteorological triggers of
+  Boletus edulis fruiting in central European beech forests. bioRxiv preprint (2025),
+  doi:10.64898/2025.12.12.693895. Not peer-reviewed.
+salerni2023: >-
+  Salerni, E., Paoli, L. & Perini, C. (2023). Italian Journal of Mycology: three years of porcini
+  productivity in Abies alba plantations in relation to extreme rain and temperature events and
+  thinning. https://italianmycology.unibo.it/article/view/16464
+kauserud2008: >-
+  Kauserud, H. et al. (2008). Mushroom fruiting and climate change. PNAS 105(10): 3811-3814.
+boddy2014: >-
+  Boddy, L. et al. (2014). Climate variation effects on fungal fruiting. Fungal Ecology 10: 20-33.
+gbif_tierra_estella: >-
+  GBIF.org occurrence records in the box 42.4-43.0 N, 2.6-1.6 W (Tierra Estella, Urbasa and
+  surroundings), monthly counts queried 2026-11-07. Finds only, with collection bias: used to
+  check seasons, not thresholds.
+micocyl_bulletins: >-
+  Micocyl (Castilla y León) mycological bulletins, e.g. parte micológico 2025-04-11: expert
+  regional forecasts in prose.
+field_guides: >-
+  Consensus of European field guides and regional mycological societies on habitat and season.
+  Not a single source; grade C at best.

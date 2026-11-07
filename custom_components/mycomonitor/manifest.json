@@ -1,7 +1,9 @@
 {
   "domain": "mycomonitor",
   "name": "MycoMonitor",
-  "codeowners": ["@rouralberto"],
+  "codeowners": [
+    "@rouralberto"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/rouralberto/ha-mycomonitor",
   "integration_type": "service",
@@ -9,5 +11,5 @@
   "issue_tracker": "https://github.com/rouralberto/ha-mycomonitor/issues",
   "requirements": [],
   "single_config_entry": true,
-  "version": "0.2.0"
+  "version": "0.3.0"
 }

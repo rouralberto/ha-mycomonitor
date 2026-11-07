@@ -1,0 +1,42 @@
+id: lepista_nuda
+scientific_name: Lepista nuda
+names:
+  es: Pie azul
+  en: Wood blewit
+habitats: [beech, oak, pine, mixed, grassland]
+notes: >-
+  Saprotrophic on leaf and needle litter; also hedges, gardens and compost. A late species that
+  often appears after the first cold spells.
+season:
+  start: "09-15"
+  peak_start: "10-25"
+  peak_end: "12-31"
+  end: "02-15"
+season_grade: C
+season_source: "GBIF near Tierra Estella, n=86: Sep 1, Oct 14, Nov 26, Dec 28, Jan 11, Feb 4, Mar 1."
+references: [gbif_tierra_estella, field_guides]
+factors:
+  - id: rain
+    indicator: rain_21d
+    lag: 7
+    role: soft
+    weight: 3
+    curve: [[10, 0.05], [40, 0.5], [80, 0.9], [120, 1.0]]
+    grade: C
+    rationale: Autumn rain a week or more before. Values are ours.
+    references: [field_guides]
+  - id: temperature
+    indicator: temperature_mean_14d
+    role: soft
+    weight: 2
+    curve: [[0, 0.0], [3, 0.6], [5, 1.0], [12, 1.0], [16, 0.3]]
+    grade: C
+    rationale: Cold-tolerant late-season species. The range is ours.
+    references: [field_guides, gbif_tierra_estella]
+  - id: frost
+    indicator: frost_days_7d
+    role: gate
+    curve: [[0, 1.0], [4, 0.7], [8, 0.3]]
+    grade: C
+    rationale: Tolerates frost better than most. Counts are ours.
+    references: [field_guides]

@@ -31,6 +31,15 @@ Tests never hit the network. API responses are recorded fixtures in
 `tests/fixtures/`, refreshed with `scripts/record_fixtures.py` (public
 reference points only).
 
+## Generated files
+
+- `strings.json`, `translations/*.json` and `icons.json` come from
+  `scripts/generate_translations.py`. Edit the script, not the JSON.
+- `docs/species/*.md` come from `scripts/generate_species_docs.py`, which reads
+  the profiles in `core/species/profiles/`.
+
+Tests fail if either is stale.
+
 ## Pull requests
 
 - One topic per pull request, with tests for new behaviour.

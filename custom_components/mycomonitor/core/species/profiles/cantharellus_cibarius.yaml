@@ -1,0 +1,48 @@
+id: cantharellus_cibarius
+scientific_name: Cantharellus cibarius
+names:
+  es: Rebozuelo
+  en: Chanterelle
+habitats: [beech, oak, pine, mixed]
+notes: Ectomycorrhizal. Locally it flushes in early summer after storms and again in autumn.
+season:
+  start: "05-20"
+  peak_start: "06-15"
+  peak_end: "10-15"
+  end: "11-30"
+season_grade: C
+season_source: "GBIF near Tierra Estella, n=61: May 2, Jun 11, Jul 15, Aug 8, Sep 7, Oct 8, Nov 8, Jan 1."
+references: [gbif_tierra_estella, field_guides]
+factors:
+  - id: rain
+    indicator: rain_14d
+    lag: 5
+    role: soft
+    weight: 3
+    curve: [[5, 0.05], [25, 0.5], [50, 0.9], [80, 1.0]]
+    grade: C
+    rationale: Summer flushes follow storms within about one to three weeks. Values are ours.
+    references: [field_guides]
+  - id: water_balance
+    indicator: water_balance_14d
+    role: soft
+    weight: 1
+    curve: [[-50, 0.1], [-20, 0.5], [0, 0.9], [15, 1.0]]
+    grade: C
+    rationale: In summer, evaporative demand can cancel out the rain. Values are ours.
+    references: [agreda2015]
+  - id: temperature
+    indicator: temperature_mean_14d
+    role: soft
+    weight: 2
+    curve: [[8, 0.0], [12, 0.6], [15, 1.0], [21, 1.0], [25, 0.4]]
+    grade: C
+    rationale: A warm-season species. The range is ours.
+    references: [field_guides, gbif_tierra_estella]
+  - id: frost
+    indicator: frost_days_7d
+    role: gate
+    curve: [[0, 1.0], [2, 0.5], [4, 0.1]]
+    grade: C
+    rationale: Frosts end the season. Counts are ours.
+    references: [field_guides]

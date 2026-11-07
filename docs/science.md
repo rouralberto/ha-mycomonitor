@@ -55,7 +55,13 @@ where conditions were poor. MycoMonitor records **visits with outcome "not
 found"** too, so local calibration has true negatives. GBIF records are
 useful only to sanity-check seasons.
 
-## Species notes
+## Species models
 
-Detailed per-species documents arrive with the species engine (0.3), in
-`docs/species/`.
+The per-species models, their factors, curves, grades and references are in
+[species/](species/README.md). Those pages are generated from the profiles the
+integration actually uses, so they cannot drift from the code.
+
+A first look at the evidence: every species is at best grade C overall. The
+strongest support is for the direction of the moisture factors (water balance
+and rain with a delay) in pine stands; most thresholds are our own and are
+labelled as such.

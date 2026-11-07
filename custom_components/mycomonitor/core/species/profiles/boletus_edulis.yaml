@@ -1,0 +1,66 @@
+id: boletus_edulis
+scientific_name: Boletus edulis group (B. edulis, B. aereus, B. reticulatus, B. pinophilus)
+names:
+  es: Boletus (grupo edulis)
+  en: Porcini (Boletus edulis group)
+habitats: [beech, oak, pine, mixed]
+notes: >-
+  Ectomycorrhizal with beech, oaks, pines and others. The group spans species with different
+  hosts and seasons (B. reticulatus and B. aereus fruit earlier, in warmer weather); one model
+  covers them all, so treat it as coarse.
+season:
+  start: "07-15"
+  peak_start: "09-01"
+  peak_end: "10-31"
+  end: "11-30"
+season_grade: C
+season_source: "GBIF near Tierra Estella, n=46: Jun 1, Jul 4, Aug 2, Sep 15, Oct 20, Nov 3, Dec 1."
+references: [gbif_tierra_estella, porcini_preprint2025, salerni2023, martinezpena2012]
+factors:
+  - id: rain
+    indicator: rain_21d
+    lag: 5
+    role: soft
+    weight: 3
+    curve: [[10, 0.05], [40, 0.5], [80, 0.9], [120, 1.0]]
+    grade: B
+    rationale: >-
+      Rain over the 21 days ending 5 days before, approximating the 26-day window in which a
+      decade of beech-forest monitoring found fruiting increasing linearly with precipitation
+      (no upper threshold found). The curve's values are ours.
+    references: [porcini_preprint2025, martinezpena2012]
+  - id: temperature
+    indicator: temperature_mean_21d
+    role: soft
+    weight: 2
+    curve: [[5, 0.0], [9, 0.5], [12, 1.0], [15, 1.0], [19, 0.4], [22, 0.0]]
+    grade: B
+    rationale: >-
+      Peak fruiting was associated with a mean of about 13 °C over the previous 20 days (preprint,
+      beech forests). The plateau and tails are ours.
+    references: [porcini_preprint2025]
+  - id: water_balance
+    indicator: water_balance_30d
+    role: soft
+    weight: 2
+    curve: [[-80, 0.1], [-30, 0.5], [0, 0.9], [20, 1.0]]
+    grade: C
+    rationale: >-
+      Water balance (rain minus evaporative demand) explained yields better than rain alone in
+      Mediterranean pine stands. Values are ours.
+    references: [agreda2015]
+  - id: heat
+    indicator: temperature_max_7d
+    role: soft
+    weight: 1
+    curve: [[24, 1.0], [30, 0.5], [34, 0.2]]
+    grade: B
+    rationale: Sudden rises in maximum temperature appeared to inhibit porcini productivity.
+    references: [salerni2023]
+  - id: frost
+    indicator: frost_days_7d
+    role: gate
+    curve: [[0, 1.0], [2, 0.6], [4, 0.1]]
+    grade: C
+    rationale: Frosts end the autumn flush; the counts are ours.
+    references: [field_guides, boddy2014]

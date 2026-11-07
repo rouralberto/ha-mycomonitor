@@ -1,0 +1,48 @@
+id: hydnum_repandum
+scientific_name: Hydnum repandum
+names:
+  es: Lengua de vaca
+  en: Hedgehog mushroom
+habitats: [beech, oak, pine, mixed]
+notes: Ectomycorrhizal with broadleaves and conifers. Long season; fruit bodies persist into winter.
+season:
+  start: "08-01"
+  peak_start: "09-15"
+  peak_end: "12-15"
+  end: "02-28"
+season_grade: C
+season_source: "GBIF near Tierra Estella, n=147: Jan 13, Feb 12, Mar 2, Jun 7, Jul 2, Aug 6, Sep 17, Oct 40, Nov 34, Dec 13."
+references: [gbif_tierra_estella, field_guides]
+factors:
+  - id: rain
+    indicator: rain_21d
+    lag: 7
+    role: soft
+    weight: 3
+    curve: [[10, 0.05], [40, 0.5], [80, 0.9], [120, 1.0]]
+    grade: C
+    rationale: Autumn rain a week or more before. Values are ours.
+    references: [field_guides]
+  - id: water_balance
+    indicator: water_balance_30d
+    role: soft
+    weight: 2
+    curve: [[-70, 0.1], [-25, 0.5], [5, 0.9], [25, 1.0]]
+    grade: C
+    rationale: Water balance as a better moisture signal than rain alone. Values are ours.
+    references: [agreda2015]
+  - id: temperature
+    indicator: temperature_mean_14d
+    role: soft
+    weight: 2
+    curve: [[1, 0.0], [4, 0.6], [7, 1.0], [15, 1.0], [19, 0.3]]
+    grade: C
+    rationale: Cool-tolerant; local records continue into winter. The range is ours.
+    references: [field_guides, gbif_tierra_estella]
+  - id: frost
+    indicator: frost_days_7d
+    role: gate
+    curve: [[0, 1.0], [4, 0.7], [8, 0.3]]
+    grade: C
+    rationale: Frost-tolerant compared with most autumn species. Counts are ours.
+    references: [field_guides]

@@ -90,6 +90,9 @@ three purposes:
 
 ## Species engine (0.3)
 
+See [species/](species/README.md) for the generated per-species pages.
+
+
 - Profiles are data (`core/species/profiles/*.yaml`). Each factor names:
   - an indicator and an optional time lag (e.g. "rain 10–25 days ago");
   - a response curve (trapezoid or threshold);

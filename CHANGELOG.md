@@ -6,8 +6,25 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-07
+
 ### Added
 
+- Species engine: season window (wrapping over New Year), gates and soft factors
+  with piecewise-linear response curves and per-factor lags, combined as
+  `100 × season × Π gates × weighted geometric mean`. Every factor carries an
+  evidence grade (A-D) and references; results report the weakest grade, the
+  limiting factor, the data used and a 7-day outlook.
+- Seven species profiles (YAML data): *Boletus edulis* group, *Lactarius
+  deliciosus*, *Craterellus cornucopioides*, *Hydnum repandum*, *Lepista nuda*,
+  *Cantharellus cibarius*, *Calocybe gambosa*. Seasons are checked against
+  local GBIF records.
+- A suitability index sensor per species compatible with each location's
+  habitats, and a "Favourable conditions" binary sensor per location.
+- Options: favourable-conditions threshold, and per-species season and curve
+  overrides edited in the UI (validated; reset to defaults).
+- Species documentation generated from the profiles (`docs/species/`), and
+  translations generated from one source (`scripts/generate_translations.py`).
 - Integration icon (light and dark) in `custom_components/mycomonitor/brand/`,
   rendered from the SVG sources in `assets/`: an original mark, a porcini-style
   mushroom inside a dry-to-favourable gauge.

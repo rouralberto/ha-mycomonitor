@@ -21,7 +21,7 @@
           "name": "How the location appears in Home Assistant, e.g. Urbasa.",
           "location": "The point to monitor. Weather data is fetched for these exact coordinates.",
           "altitude": "Optional. Leave empty to use the terrain height (90 m model). Temperatures are adjusted to this altitude.",
-          "habitats": "Vegetation at the location. Species models (coming in 0.3) only run for compatible habitats."
+          "habitats": "Vegetation at the location. Only species compatible with these habitats get a sensor."
         }
       }
     }
@@ -53,7 +53,7 @@
             "name": "How the location appears in Home Assistant, e.g. Urbasa.",
             "location": "The point to monitor. Weather data is fetched for these exact coordinates.",
             "altitude": "Optional. Leave empty to use the terrain height (90 m model). Temperatures are adjusted to this altitude.",
-            "habitats": "Vegetation at the location. Species models (coming in 0.3) only run for compatible habitats."
+            "habitats": "Vegetation at the location. Only species compatible with these habitats get a sensor."
           }
         },
         "reconfigure": {
@@ -68,13 +68,66 @@
             "name": "How the location appears in Home Assistant, e.g. Urbasa.",
             "location": "The point to monitor. Weather data is fetched for these exact coordinates.",
             "altitude": "Optional. Leave empty to use the terrain height (90 m model). Temperatures are adjusted to this altitude.",
-            "habitats": "Vegetation at the location. Species models (coming in 0.3) only run for compatible habitats."
+            "habitats": "Vegetation at the location. Only species compatible with these habitats get a sensor."
           }
         }
       }
     }
   },
+  "options": {
+    "error": {
+      "invalid_override": "Invalid value: {error}"
+    },
+    "step": {
+      "init": {
+        "title": "MycoMonitor options",
+        "menu_options": {
+          "settings": "Settings",
+          "species": "Species thresholds"
+        }
+      },
+      "settings": {
+        "title": "Settings",
+        "data": {
+          "favorable_threshold": "Favourable conditions threshold"
+        },
+        "data_description": {
+          "favorable_threshold": "A location's favourable-conditions sensor turns on when any species' index reaches this value (0-100)."
+        }
+      },
+      "species": {
+        "title": "Species thresholds",
+        "description": "Choose a species to adjust its season and response curves.",
+        "data": {
+          "species": "Species"
+        }
+      },
+      "species_edit": {
+        "title": "{species}",
+        "description": "Season dates are MM-DD. Each curve is a list of indicator:score points (score 0-1), e.g. 10:0.05, 40:0.5, 80:1; values in between are interpolated. Factors:\n{factors}\n\nSee docs/species for the evidence behind each default.",
+        "data": {
+          "season_start": "Season start",
+          "season_peak_start": "Peak start",
+          "season_peak_end": "Peak end",
+          "season_end": "Season end",
+          "curve_rain": "Rain",
+          "curve_water_balance": "Water balance",
+          "curve_temperature": "Temperature",
+          "curve_frost": "Frost (gate)",
+          "curve_heat": "Heat",
+          "curve_wet_days": "Rainy days",
+          "curve_soil_warming": "Soil warming",
+          "reset": "Reset to defaults"
+        }
+      }
+    }
+  },
   "entity": {
+    "binary_sensor": {
+      "favorable_conditions": {
+        "name": "Favourable conditions"
+      }
+    },
     "sensor": {
       "rain_3d": {
         "name": "Rainfall 3 days"
@@ -150,6 +203,111 @@
       },
       "last_update": {
         "name": "Data updated"
+      },
+      "boletus_edulis": {
+        "name": "Porcini (Boletus edulis group)",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Out of season",
+              "unfavorable": "Unfavourable",
+              "low": "Low",
+              "moderate": "Moderate",
+              "favorable": "Favourable",
+              "very_favorable": "Very favourable"
+            }
+          }
+        }
+      },
+      "calocybe_gambosa": {
+        "name": "St George's mushroom",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Out of season",
+              "unfavorable": "Unfavourable",
+              "low": "Low",
+              "moderate": "Moderate",
+              "favorable": "Favourable",
+              "very_favorable": "Very favourable"
+            }
+          }
+        }
+      },
+      "cantharellus_cibarius": {
+        "name": "Chanterelle",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Out of season",
+              "unfavorable": "Unfavourable",
+              "low": "Low",
+              "moderate": "Moderate",
+              "favorable": "Favourable",
+              "very_favorable": "Very favourable"
+            }
+          }
+        }
+      },
+      "craterellus_cornucopioides": {
+        "name": "Black trumpet",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Out of season",
+              "unfavorable": "Unfavourable",
+              "low": "Low",
+              "moderate": "Moderate",
+              "favorable": "Favourable",
+              "very_favorable": "Very favourable"
+            }
+          }
+        }
+      },
+      "hydnum_repandum": {
+        "name": "Hedgehog mushroom",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Out of season",
+              "unfavorable": "Unfavourable",
+              "low": "Low",
+              "moderate": "Moderate",
+              "favorable": "Favourable",
+              "very_favorable": "Very favourable"
+            }
+          }
+        }
+      },
+      "lactarius_deliciosus": {
+        "name": "Saffron milk cap",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Out of season",
+              "unfavorable": "Unfavourable",
+              "low": "Low",
+              "moderate": "Moderate",
+              "favorable": "Favourable",
+              "very_favorable": "Very favourable"
+            }
+          }
+        }
+      },
+      "lepista_nuda": {
+        "name": "Wood blewit",
+        "state_attributes": {
+          "category": {
+            "state": {
+              "out_of_season": "Out of season",
+              "unfavorable": "Unfavourable",
+              "low": "Low",
+              "moderate": "Moderate",
+              "favorable": "Favourable",
+              "very_favorable": "Very favourable"
+            }
+          }
+        }
       }
     }
   },
@@ -169,6 +327,17 @@
         "oak": "Oak forest",
         "mixed": "Mixed forest",
         "grassland": "Grassland and meadows"
+      }
+    },
+    "species": {
+      "options": {
+        "boletus_edulis": "Porcini (Boletus edulis group)",
+        "calocybe_gambosa": "St George's mushroom",
+        "cantharellus_cibarius": "Chanterelle",
+        "craterellus_cornucopioides": "Black trumpet",
+        "hydnum_repandum": "Hedgehog mushroom",
+        "lactarius_deliciosus": "Saffron milk cap",
+        "lepista_nuda": "Wood blewit"
       }
     }
   }
