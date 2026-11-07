@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Integration icon (light and dark) in `custom_components/mycomonitor/brand/`,
+  rendered from the SVG sources in `assets/`: an original mark, a porcini-style
+  mushroom inside a dry-to-favourable gauge.
+
 ## [0.2.0] - 2026-11-07
 
 ### Added

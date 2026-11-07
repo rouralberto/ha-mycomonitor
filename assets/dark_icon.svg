@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="24 -4 464 464" width="512" height="512">
+  <!-- MycoMonitor for Home Assistant: an original mark. A suitability gauge from dry (amber) to favourable (green) around a porcini-style mushroom. No white cap spots, so it never suggests a toxic Amanita. -->
+  <defs>
+    <linearGradient id="arc" x1="56" y1="0" x2="456" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E0A33A"/>
+      <stop offset="0.45" stop-color="#B7B347"/>
+      <stop offset="0.75" stop-color="#6FA84F"/>
+      <stop offset="1" stop-color="#2E8B57"/>
+    </linearGradient>
+  </defs>
+  <path d="M 114.6 397.4 A 200 200 0 1 1 397.4 397.4" fill="none" stroke="url(#arc)" stroke-width="52" stroke-linecap="round"/>
+  <path d="M 214 262 L 298 262 C 302 290 330 312 330 342 Q 330 374 298 374 L 214 374 Q 182 374 182 342 C 182 312 210 290 214 262 Z" fill="#F1E4C8" stroke="#E8EEF4" stroke-width="14" stroke-linejoin="round"/>
+  <path d="M 140 250 C 140 166 196 118 256 118 C 316 118 372 166 372 250 Q 372 268 354 268 L 158 268 Q 140 268 140 250 Z" fill="#B5683F" stroke="#E8EEF4" stroke-width="14" stroke-linejoin="round"/>
+  <path d="M 184 196 C 196 164 220 146 246 140" fill="none" stroke="#D69468" stroke-width="14" stroke-linecap="round"/>
+</svg>
